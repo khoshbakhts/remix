@@ -53,12 +53,18 @@
 					},
 					{
 						"indexed": true,
-						"internalType": "address",
-						"name": "galleryOwner",
-						"type": "address"
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "isInGallery",
+						"type": "bool"
 					}
 				],
-				"name": "WallAddedToGallery",
+				"name": "WallGalleryStatusUpdated",
 				"type": "event"
 			},
 			{
@@ -69,22 +75,15 @@
 						"internalType": "uint256",
 						"name": "wallId",
 						"type": "uint256"
-					}
-				],
-				"name": "WallPainted",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
+					},
 					{
-						"indexed": true,
+						"indexed": false,
 						"internalType": "uint256",
-						"name": "wallId",
+						"name": "percentage",
 						"type": "uint256"
 					}
 				],
-				"name": "WallRemovedFromGallery",
+				"name": "WallOwnershipPercentageUpdated",
 				"type": "event"
 			},
 			{
@@ -180,19 +179,6 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "wallId",
-						"type": "uint256"
-					}
-				],
-				"name": "addWallToGallery",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
 						"name": "requestId",
 						"type": "uint256"
 					}
@@ -204,7 +190,20 @@
 			},
 			{
 				"inputs": [],
-				"name": "getPendingWallRequests",
+				"name": "galleryContract",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getPendingRequests",
 				"outputs": [
 					{
 						"internalType": "uint256[]",
@@ -275,19 +274,19 @@
 								"type": "uint256"
 							},
 							{
+								"internalType": "uint256",
+								"name": "ownershipPercentage",
+								"type": "uint256"
+							},
+							{
 								"internalType": "bool",
 								"name": "isInGallery",
 								"type": "bool"
 							},
 							{
-								"internalType": "bool",
-								"name": "isPainted",
-								"type": "bool"
-							},
-							{
-								"internalType": "address",
-								"name": "galleryOwner",
-								"type": "address"
+								"internalType": "uint256",
+								"name": "galleryId",
+								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
@@ -325,19 +324,6 @@
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "wallId",
-						"type": "uint256"
-					}
-				],
-				"name": "markWallAsPainted",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -419,54 +405,39 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "wallId",
-						"type": "uint256"
-					}
-				],
-				"name": "removeWallFromGallery",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
+						"internalType": "string",
+						"name": "country",
+						"type": "string"
+					},
 					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "country",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "city",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "physicalAddress",
-								"type": "string"
-							},
-							{
-								"internalType": "int256",
-								"name": "longitude",
-								"type": "int256"
-							},
-							{
-								"internalType": "int256",
-								"name": "latitude",
-								"type": "int256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "size",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct Wall.WallRequestParams",
-						"name": "params",
-						"type": "tuple"
+						"internalType": "string",
+						"name": "city",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "physicalAddress",
+						"type": "string"
+					},
+					{
+						"internalType": "int256",
+						"name": "longitude",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "latitude",
+						"type": "int256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "size",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ownershipPercentage",
+						"type": "uint256"
 					}
 				],
 				"name": "requestWall",
@@ -485,6 +456,60 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_galleryContract",
+						"type": "address"
+					}
+				],
+				"name": "setGalleryContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "wallId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "inGallery",
+						"type": "bool"
+					}
+				],
+				"name": "setGalleryStatus",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "wallId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "percentage",
+						"type": "uint256"
+					}
+				],
+				"name": "setOwnershipPercentage",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -520,41 +545,34 @@
 						"type": "uint256"
 					},
 					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "country",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "city",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "physicalAddress",
-								"type": "string"
-							},
-							{
-								"internalType": "int256",
-								"name": "longitude",
-								"type": "int256"
-							},
-							{
-								"internalType": "int256",
-								"name": "latitude",
-								"type": "int256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "size",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct Wall.WallRequestParams",
-						"name": "params",
-						"type": "tuple"
+						"internalType": "string",
+						"name": "country",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "city",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "physicalAddress",
+						"type": "string"
+					},
+					{
+						"internalType": "int256",
+						"name": "longitude",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "latitude",
+						"type": "int256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "size",
+						"type": "uint256"
 					}
 				],
 				"name": "updateWall",
@@ -580,81 +598,44 @@
 					{
 						"components": [
 							{
-								"internalType": "uint256",
-								"name": "id",
-								"type": "uint256"
+								"internalType": "string",
+								"name": "country",
+								"type": "string"
 							},
 							{
-								"internalType": "address",
-								"name": "owner",
-								"type": "address"
+								"internalType": "string",
+								"name": "city",
+								"type": "string"
 							},
 							{
-								"components": [
-									{
-										"internalType": "string",
-										"name": "country",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "city",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "physicalAddress",
-										"type": "string"
-									},
-									{
-										"internalType": "int256",
-										"name": "longitude",
-										"type": "int256"
-									},
-									{
-										"internalType": "int256",
-										"name": "latitude",
-										"type": "int256"
-									}
-								],
-								"internalType": "struct Wall.Location",
-								"name": "location",
-								"type": "tuple"
+								"internalType": "string",
+								"name": "physicalAddress",
+								"type": "string"
 							},
 							{
-								"internalType": "uint256",
-								"name": "size",
-								"type": "uint256"
+								"internalType": "int256",
+								"name": "longitude",
+								"type": "int256"
 							},
 							{
-								"internalType": "bool",
-								"name": "isInGallery",
-								"type": "bool"
-							},
-							{
-								"internalType": "bool",
-								"name": "isPainted",
-								"type": "bool"
-							},
-							{
-								"internalType": "address",
-								"name": "galleryOwner",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "createdAt",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "lastUpdated",
-								"type": "uint256"
+								"internalType": "int256",
+								"name": "latitude",
+								"type": "int256"
 							}
 						],
-						"internalType": "struct Wall.WallData",
-						"name": "wallData",
+						"internalType": "struct Wall.Location",
+						"name": "location",
 						"type": "tuple"
+					},
+					{
+						"internalType": "uint256",
+						"name": "size",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ownershipPercentage",
+						"type": "uint256"
 					},
 					{
 						"internalType": "bool",
@@ -728,19 +709,19 @@
 						"type": "uint256"
 					},
 					{
+						"internalType": "uint256",
+						"name": "ownershipPercentage",
+						"type": "uint256"
+					},
+					{
 						"internalType": "bool",
 						"name": "isInGallery",
 						"type": "bool"
 					},
 					{
-						"internalType": "bool",
-						"name": "isPainted",
-						"type": "bool"
-					},
-					{
-						"internalType": "address",
-						"name": "galleryOwner",
-						"type": "address"
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
@@ -821,11 +802,11 @@
 			]
 		},
 		"WallContract.sol": {
-			"keccak256": "0x0af549090c6acb0519b41142964acc7ed2c958c4a604266b16625031487370d8",
+			"keccak256": "0x43e3dfad58fe9779c46922657e3a78f0f2055cb7960f0eefb5f1ca5f8066d5cf",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://dd1fa8c935bc3ee250ee49f025ab5ef8abb4ff4871a1ad8b26b2ce2904aa5488",
-				"dweb:/ipfs/QmXGcHKVUmTx1fREHr9qVJoWev5eYCVK9bhEEj4iWMzQzy"
+				"bzz-raw://7d60c5ff0c696dea2f475ded8e341b14c3b4c670fb8aff2e714f62b24bb9c762",
+				"dweb:/ipfs/QmVMZCbnSUYUFLcBKn12dGNYh8x4n7YNrH2RJgCscpL1Dh"
 			]
 		}
 	},

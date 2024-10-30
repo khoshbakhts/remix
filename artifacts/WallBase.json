@@ -90,19 +90,6 @@
 					"internalType": "uint256",
 					"name": "wallId",
 					"type": "uint256"
-				}
-			],
-			"name": "WallPainted",
-			"type": "event"
-		},
-		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": true,
-					"internalType": "uint256",
-					"name": "wallId",
-					"type": "uint256"
 				},
 				{
 					"indexed": true,
@@ -239,21 +226,6 @@
 					"internalType": "uint256",
 					"name": "size",
 					"type": "uint256"
-				},
-				{
-					"internalType": "bool",
-					"name": "isInGallery",
-					"type": "bool"
-				},
-				{
-					"internalType": "bool",
-					"name": "isPainted",
-					"type": "bool"
-				},
-				{
-					"internalType": "address",
-					"name": "galleryOwner",
-					"type": "address"
 				},
 				{
 					"internalType": "uint256",

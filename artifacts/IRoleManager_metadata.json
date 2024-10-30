@@ -33,32 +33,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "PAINTER_ROLE",
-				"outputs": [
-					{
-						"internalType": "bytes32",
-						"name": "",
-						"type": "bytes32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "SPONSOR_ROLE",
-				"outputs": [
-					{
-						"internalType": "bytes32",
-						"name": "",
-						"type": "bytes32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "WALL_OWNER_ROLE",
 				"outputs": [
 					{
@@ -108,7 +82,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"WallContract.sol": "IRoleManager"
+			"Gallery.sol": "IRoleManager"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -146,12 +120,12 @@
 				"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
 			]
 		},
-		"WallContract.sol": {
-			"keccak256": "0xa523bfc874f2bddb8da0ba1d918feeda1284a2703a3dce26d05d276fd5debca1",
+		"Gallery.sol": {
+			"keccak256": "0x129ff161ee5101fa6a94025c93c36618f98b86e0ce61bf80334b05792fa8577a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e050b0d75be05f9186910d91c4db0f501e4699742f43166454ffd0e501a81492",
-				"dweb:/ipfs/QmRow5FJt6D9kN4EGp9Uy813cotSh1uU8ySf3xZN8juCxv"
+				"bzz-raw://e1c5e65c7889dcaca4723b64b103e4e707377064a43d8847431c525cc56e3af7",
+				"dweb:/ipfs/QmesToXGd3PVLS2DnV5ExThEfaSCCDzAPLeS23n4zZTQVr"
 			]
 		}
 	},
