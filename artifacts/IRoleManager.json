@@ -51,7 +51,7 @@
 		"methodIdentifiers": {
 			"ADMIN_ROLE()": "75b238fc",
 			"GALLERY_OWNER_ROLE()": "78988ebd",
-			"WALL_OWNER_ROLE()": "98e4abb5",
+			"PAINTER_ROLE()": "303e3840",
 			"hasRole(bytes32,address)": "91d14854"
 		}
 	},
@@ -84,7 +84,7 @@
 		},
 		{
 			"inputs": [],
-			"name": "WALL_OWNER_ROLE",
+			"name": "PAINTER_ROLE",
 			"outputs": [
 				{
 					"internalType": "bytes32",
