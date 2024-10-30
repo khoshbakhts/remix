@@ -24,7 +24,7 @@
 					},
 					{
 						"internalType": "address",
-						"name": "_sharesContract",
+						"name": "_paintingShares",
 						"type": "address"
 					}
 				],
@@ -281,12 +281,6 @@
 						"internalType": "uint256",
 						"name": "paintingId",
 						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "sharesContract",
-						"type": "address"
 					}
 				],
 				"name": "SharesCreated",
@@ -521,6 +515,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "paintingShares",
+				"outputs": [
+					{
+						"internalType": "contract IPaintingShares",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -549,11 +556,6 @@
 						"internalType": "string",
 						"name": "description",
 						"type": "string"
-					},
-					{
-						"internalType": "address",
-						"name": "sharesContract",
-						"type": "address"
 					},
 					{
 						"internalType": "bool",
@@ -700,19 +702,6 @@
 				"name": "setApprovalForAll",
 				"outputs": [],
 				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "sharesContract",
-				"outputs": [
-					{
-						"internalType": "contract IPaintingShares",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -1127,11 +1116,11 @@
 			]
 		},
 		"Painting.sol": {
-			"keccak256": "0x9bca7b8c3944e1db87901b8e076dc1f3dff8f985b2143772a584de5dc091456d",
+			"keccak256": "0xfe5ae8214e7435b2cb53cf6618cf1b4dcc7c03c7a0552b6567a33d09a1314eb5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://10ca7e14162ef41ccffdd76cc6e4d8900e2e5749b336ca5328a6565fb6c24e67",
-				"dweb:/ipfs/QmW2Kmsp1qhLPjb7phnCfm7hMwaCahGvdUdRgeqKFnEHrY"
+				"bzz-raw://87e71333c4ca87461f04a206cd8a6dedfbff1870980f666e59c08eb881f857e8",
+				"dweb:/ipfs/QmPxBRmF7A7bbMcuWckiB6A1fM5yD4vuHQpcjdsocG8RQs"
 			]
 		}
 	},

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// PaintingNFT.sol
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
@@ -46,7 +45,7 @@ interface IPaintingShares {
         uint256 platformPercentage,
         uint256 wallOwnerPercentage,
         uint256 galleryOwnerPercentage
-    ) external returns (address);
+    ) external;
 }
 
 contract PaintingNFT is ERC721, Pausable {
@@ -55,7 +54,7 @@ contract PaintingNFT is ERC721, Pausable {
     IRoleManager public immutable roleManager;
     IWall public immutable wallContract;
     IGallery public immutable galleryContract;
-    IPaintingShares public immutable sharesContract;
+    IPaintingShares public immutable paintingShares;
 
     Counters.Counter private _paintingIds;
 
@@ -74,7 +73,6 @@ contract PaintingNFT is ERC721, Pausable {
         uint256 wallId;
         address painter;
         string description;
-        address sharesContract;
         bool sharesMinted;
         uint256 createdAt;
     }
@@ -89,23 +87,23 @@ contract PaintingNFT is ERC721, Pausable {
     event PaintingRequestApproved(uint256 indexed wallId, address indexed painter);
     event PaintingRequestRejected(uint256 indexed wallId, address indexed painter);
     event PaintingCompleted(uint256 indexed paintingId, uint256 indexed wallId);
-    event SharesCreated(uint256 indexed paintingId, address sharesContract);
+    event SharesCreated(uint256 indexed paintingId);
 
     constructor(
         address _roleManager,
         address _wallContract,
         address _galleryContract,
-        address _sharesContract
+        address _paintingShares
     ) ERC721("Wall Painting", "WPAINT") {
         require(_roleManager != address(0), "Invalid RoleManager address");
         require(_wallContract != address(0), "Invalid Wall contract address");
         require(_galleryContract != address(0), "Invalid Gallery contract address");
-        require(_sharesContract != address(0), "Invalid Shares contract address");
+        require(_paintingShares != address(0), "Invalid Shares contract address");
         
         roleManager = IRoleManager(_roleManager);
         wallContract = IWall(_wallContract);
         galleryContract = IGallery(_galleryContract);
-        sharesContract = IPaintingShares(_sharesContract);
+        paintingShares = IPaintingShares(_paintingShares);
     }
 
     modifier onlyPainter() {
@@ -195,31 +193,27 @@ contract PaintingNFT is ERC721, Pausable {
         // Create painting NFT
         _safeMint(request.painter, newPaintingId);
 
-        // Create shares
-        address shareTokenAddress = _createShares(newPaintingId, wallId, request.painter);
-
         // Store painting data
         paintings[newPaintingId] = PaintingData({
             id: newPaintingId,
             wallId: wallId,
             painter: request.painter,
             description: request.description,
-            sharesContract: shareTokenAddress,
-            sharesMinted: true,
+            sharesMinted: false,
             createdAt: block.timestamp
         });
 
         wallPainted[wallId] = true;
         
+        // Get ownership percentages and create shares
+        _createShares(newPaintingId, wallId, request.painter);
+
         emit PaintingCompleted(newPaintingId, wallId);
-        emit SharesCreated(newPaintingId, shareTokenAddress);
     }
 
-    function _createShares(
-        uint256 paintingId, 
-        uint256 wallId,
-        address painter
-    ) private returns (address) {
+    function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
+        require(!paintings[paintingId].sharesMinted, "Shares already minted");
+
         // Get wall and gallery data
         (,address wallOwner,,uint256 wallOwnerPercentage,, uint256 galleryId) = 
             wallContract.getWall(wallId);
@@ -229,8 +223,8 @@ contract PaintingNFT is ERC721, Pausable {
         
         uint256 platformPercentage = galleryContract.platformPercentage();
 
-        // Create shares through the shares contract
-        return sharesContract.createSharesForPainting(
+        // Create and distribute shares
+        paintingShares.createSharesForPainting(
             paintingId,
             _getPlatformAdmin(),
             wallOwner,
@@ -240,12 +234,17 @@ contract PaintingNFT is ERC721, Pausable {
             wallOwnerPercentage,
             galleryOwnerPercentage
         );
+
+        paintings[paintingId].sharesMinted = true;
+        emit SharesCreated(paintingId);
     }
 
     function _getPlatformAdmin() private view returns (address) {
+        // Get the first admin address from RoleManager
         return msg.sender; // This should be updated based on your admin management system
     }
 
+    // Admin functions
     function pause() external {
         require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), 
                 "Must have ADMIN_ROLE");
