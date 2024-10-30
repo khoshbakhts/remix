@@ -1,98 +1,320 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 interface IRoleManager {
     function hasRole(bytes32 role, address account) external view returns (bool);
+    function ADMIN_ROLE() external view returns (bytes32);
+    function WALL_OWNER_ROLE() external view returns (bytes32);
+    function PAINTER_ROLE() external view returns (bytes32);
+    function GALLERY_OWNER_ROLE() external view returns (bytes32);
+    function SPONSOR_ROLE() external view returns (bytes32);
 }
 
-// Contract to manage wall registration in the Wallery platform
-contract WallRegistry is AccessControl, Pausable {
-    // Defining roles using AccessControl's role mechanism
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant WALL_OWNER_ROLE = keccak256("WALL_OWNER_ROLE");
-
-    // Reference to RoleManager contract
+// Base contract with shared functionality
+abstract contract WallBase is Pausable {
+    using Counters for Counters.Counter;
+    
     IRoleManager public roleManager;
+    Counters.Counter private _wallIds;
 
-    // Struct to store wall registration details
-    struct Wall {
-        uint256 id;
-        address owner;
-        string metadata;
-        bool approved;
+    struct Location {
+        string country;
+        string city;
+        string physicalAddress;
+        int256 longitude;
+        int256 latitude;
     }
 
-    // Counter for wall requests
-    uint256 private wallCounter;
+    struct WallData {
+        uint256 id;
+        address owner;
+        Location location;
+        uint256 size;
+        bool isInGallery;
+        bool isPainted;
+        address galleryOwner;
+        uint256 createdAt;
+        uint256 lastUpdated;
+    }
 
-    // Mapping to store wall registration requests
-    mapping(uint256 => Wall) public walls;
+    // Shared storage
+    mapping(uint256 => WallData) public walls;
+    mapping(address => uint256[]) public ownerWalls;
 
-    // Event to be emitted when a new wall registration request is created
-    event WallRequestCreated(uint256 indexed wallId, address indexed owner, string metadata);
+    // Events
+    event WallTransferred(uint256 indexed wallId, address indexed from, address indexed to);
+    event WallUpdated(uint256 indexed wallId);
+    event WallPainted(uint256 indexed wallId);
 
-    // Event to be emitted when a wall registration request is approved or rejected
-    event WallRequestReviewed(uint256 indexed wallId, bool approved);
-
-    // Constructor to set the RoleManager contract address
     constructor(address _roleManagerAddress) {
         require(_roleManagerAddress != address(0), "Invalid RoleManager address");
         roleManager = IRoleManager(_roleManagerAddress);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(ADMIN_ROLE, msg.sender);
     }
 
-    // Function for wall owners to submit a new wall registration request
-    function submitWallRequest(string memory _metadata) public {
-        require(roleManager.hasRole(WALL_OWNER_ROLE, msg.sender), "Caller does not have WALL_OWNER_ROLE");
-        wallCounter++;
-        walls[wallCounter] = Wall(wallCounter, msg.sender, _metadata, false);
-        emit WallRequestCreated(wallCounter, msg.sender, _metadata);
+    // Shared modifiers
+    modifier onlyAdmin() {
+        require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), "Caller is not an admin");
+        _;
     }
 
-    // Function for admin to approve a wall registration request
-    function approveWallRequest(uint256 _wallId) public{
-        require(roleManager.hasRole(ADMIN_ROLE, msg.sender),"Caller does not have WALL_OWNER_ROLE");
-        require(_wallId > 0 && _wallId <= wallCounter, "Invalid wall ID");
-        Wall storage wall = walls[_wallId];
-        require(!wall.approved, "Wall already approved");
-        wall.approved = true;
-        emit WallRequestReviewed(_wallId, true);
+    modifier onlyWallOwner(uint256 wallId) {
+        require(walls[wallId].owner == msg.sender || 
+                roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), msg.sender), 
+                "Caller is not the wall owner");
+        _;
     }
 
-    // Function for admin to reject a wall registration request
-    function rejectWallRequest(uint256 _wallId) public onlyRole(ADMIN_ROLE) {
-        require(_wallId > 0 && _wallId <= wallCounter, "Invalid wall ID");
-        Wall storage wall = walls[_wallId];
-        require(!wall.approved, "Wall already approved");
-        delete walls[_wallId];
-        emit WallRequestReviewed(_wallId, false);
+    modifier wallExists(uint256 wallId) {
+        require(walls[wallId].owner != address(0), "Wall does not exist");
+        _;
     }
 
-    // Function to get wall details by ID
-    function getWallDetails(uint256 _wallId) public view returns (Wall memory) {
-        require(_wallId > 0 && _wallId <= wallCounter, "Invalid wall ID");
-        return walls[_wallId];
+    // Internal helper functions
+    function _getNextWallId() internal returns (uint256) {
+        _wallIds.increment();
+        return _wallIds.current();
     }
 
-    // Function to transfer ownership of a wall, restricted to wall owner
-    function transferWall(uint256 _wallId, address _newOwner) public {
-        require(_wallId > 0 && _wallId <= wallCounter, "Invalid wall ID");
-        require(walls[_wallId].owner == msg.sender, "You are not the owner of this wall");
-        require(_newOwner != address(0), "Invalid new owner address");
-        walls[_wallId].owner = _newOwner;
+    function _removeWallFromOwner(uint256 wallId, address owner) internal {
+        uint256[] storage ownerWallsList = ownerWalls[owner];
+        for (uint i = 0; i < ownerWallsList.length; i++) {
+            if (ownerWallsList[i] == wallId) {
+                ownerWallsList[i] = ownerWallsList[ownerWallsList.length - 1];
+                ownerWallsList.pop();
+                break;
+            }
+        }
+    }
+}
+
+// Registry contract for wall registration and approval
+contract WallRegistry is WallBase {
+    struct WallRequest {
+        address requester;
+        Location location;
+        uint256 size;
+        bool pending;
+        bool approved;
     }
 
-    // Function to pause the contract, restricted to admin role holders
-    function pause() public onlyRole(ADMIN_ROLE) {
-        _pause();
+    mapping(uint256 => WallRequest) public wallRequests;
+    uint256[] public pendingWallRequests;
+
+    event WallRequested(uint256 indexed requestId, address indexed requester);
+    event WallRequestApproved(uint256 indexed requestId, uint256 indexed wallId);
+    event WallRequestRejected(uint256 indexed requestId);
+
+    constructor(address _roleManager) WallBase(_roleManager) {}
+
+    function requestWall(
+        string calldata country,
+        string calldata city,
+        string calldata physicalAddress,
+        int256 longitude,
+        int256 latitude,
+        uint256 size
+    ) external whenNotPaused {
+        // Check if requester has WALL_OWNER_ROLE
+        require(roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), msg.sender), 
+                "Must have WALL_OWNER_ROLE to request wall registration");
+        
+        require(bytes(country).length > 0 && bytes(city).length > 0, "Invalid location data");
+        require(size > 0, "Invalid size");
+
+        uint256 requestId = _getNextWallId();
+        
+        Location memory location = Location({
+            country: country,
+            city: city,
+            physicalAddress: physicalAddress,
+            longitude: longitude,
+            latitude: latitude
+        });
+
+        wallRequests[requestId] = WallRequest({
+            requester: msg.sender,
+            location: location,
+            size: size,
+            pending: true,
+            approved: false
+        });
+
+        pendingWallRequests.push(requestId);
+        emit WallRequested(requestId, msg.sender);
     }
 
-    // Function to unpause the contract, restricted to admin role holders
-    function unpause() public onlyRole(ADMIN_ROLE) {
-        _unpause();
+    function approveWallRequest(uint256 requestId) external onlyAdmin whenNotPaused {
+        WallRequest storage request = wallRequests[requestId];
+        require(request.pending, "Request not pending");
+        
+        // Double check requester still has WALL_OWNER_ROLE
+        require(roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), request.requester), 
+                "Requester must maintain WALL_OWNER_ROLE");
+
+        request.pending = false;
+        request.approved = true;
+
+        WallData memory newWall = WallData({
+            id: requestId,
+            owner: request.requester,
+            location: request.location,
+            size: request.size,
+            isInGallery: false,
+            isPainted: false,
+            galleryOwner: address(0),
+            createdAt: block.timestamp,
+            lastUpdated: block.timestamp
+        });
+
+        walls[requestId] = newWall;
+        ownerWalls[request.requester].push(requestId);
+        _removeFromPendingRequests(requestId);
+
+        emit WallRequestApproved(requestId, requestId);
+    }
+
+    function rejectWallRequest(uint256 requestId) external onlyAdmin whenNotPaused {
+        WallRequest storage request = wallRequests[requestId];
+        require(request.pending, "Request not pending");
+
+        request.pending = false;
+        request.approved = false;
+        _removeFromPendingRequests(requestId);
+
+        emit WallRequestRejected(requestId);
+    }
+
+    function getPendingRequests() external view returns (uint256[] memory) {
+        // Only admin and wall owners can view pending requests
+        require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender) || 
+                roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), msg.sender),
+                "Not authorized to view requests");
+        return pendingWallRequests;
+    }
+
+    function _removeFromPendingRequests(uint256 requestId) private {
+        for (uint i = 0; i < pendingWallRequests.length; i++) {
+            if (pendingWallRequests[i] == requestId) {
+                pendingWallRequests[i] = pendingWallRequests[pendingWallRequests.length - 1];
+                pendingWallRequests.pop();
+                break;
+            }
+        }
+    }
+}
+
+// Management contract for wall updates and transfers
+contract WallManagement is WallBase {
+    constructor(address _roleManager) WallBase(_roleManager) {}
+
+    function updateWall(
+        uint256 wallId,
+        string calldata country,
+        string calldata city,
+        string calldata physicalAddress,
+        int256 longitude,
+        int256 latitude,
+        uint256 size
+    ) external wallExists(wallId) whenNotPaused {
+        // Check if caller is wall owner or admin
+        require(walls[wallId].owner == msg.sender || 
+                roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
+                "Not authorized to update wall");
+        
+        require(bytes(country).length > 0 && bytes(city).length > 0, "Invalid location data");
+        require(size > 0, "Invalid size");
+
+        WallData storage wall = walls[wallId];
+        wall.location.country = country;
+        wall.location.city = city;
+        wall.location.physicalAddress = physicalAddress;
+        wall.location.longitude = longitude;
+        wall.location.latitude = latitude;
+        wall.size = size;
+        wall.lastUpdated = block.timestamp;
+
+        emit WallUpdated(wallId);
+    }
+
+    function transferWall(uint256 wallId, address newOwner) external 
+        wallExists(wallId) 
+        whenNotPaused 
+    {
+        // Check if caller is wall owner or admin
+        require(walls[wallId].owner == msg.sender || 
+                roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
+                "Not authorized to transfer wall");
+                
+        require(newOwner != address(0), "Invalid new owner");
+        require(roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), newOwner), 
+                "New owner must have WALL_OWNER_ROLE");
+
+        address oldOwner = walls[wallId].owner;
+        walls[wallId].owner = newOwner;
+        walls[wallId].lastUpdated = block.timestamp;
+
+        _removeWallFromOwner(wallId, oldOwner);
+        ownerWalls[newOwner].push(wallId);
+
+        emit WallTransferred(wallId, oldOwner, newOwner);
+    }
+
+    function markWallAsPainted(uint256 wallId) external 
+        wallExists(wallId) 
+        whenNotPaused 
+    {
+        require(roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender) ||
+                roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
+                "Not authorized to mark wall as painted");
+                
+        require(!walls[wallId].isPainted, "Wall already painted");
+
+        walls[wallId].isPainted = true;
+        walls[wallId].lastUpdated = block.timestamp;
+
+        emit WallPainted(wallId);
+    }
+}
+
+// Gallery integration contract
+contract GalleryIntegration is WallBase {
+    event WallAddedToGallery(uint256 indexed wallId, address indexed galleryOwner);
+    event WallRemovedFromGallery(uint256 indexed wallId);
+
+    constructor(address _roleManager) WallBase(_roleManager) {}
+
+    function addWallToGallery(uint256 wallId) external 
+        wallExists(wallId) 
+        whenNotPaused 
+    {
+        require(roleManager.hasRole(roleManager.GALLERY_OWNER_ROLE(), msg.sender), 
+                "Must have GALLERY_OWNER_ROLE to add wall to gallery");
+                
+        require(!walls[wallId].isInGallery, "Wall already in a gallery");
+        
+        walls[wallId].isInGallery = true;
+        walls[wallId].galleryOwner = msg.sender;
+        walls[wallId].lastUpdated = block.timestamp;
+
+        emit WallAddedToGallery(wallId, msg.sender);
+    }
+
+    function removeWallFromGallery(uint256 wallId) external 
+        wallExists(wallId) 
+        whenNotPaused 
+    {
+        require(walls[wallId].isInGallery, "Wall not in a gallery");
+        require(msg.sender == walls[wallId].galleryOwner || 
+                roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), 
+                "Not authorized to remove wall from gallery");
+
+        walls[wallId].isInGallery = false;
+        walls[wallId].galleryOwner = address(0);
+        walls[wallId].lastUpdated = block.timestamp;
+
+        emit WallRemovedFromGallery(wallId);
     }
 }

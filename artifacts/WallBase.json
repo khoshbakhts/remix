@@ -1,0 +1,273 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"ownerWalls(address,uint256)": "6f725c13",
+			"paused()": "5c975abb",
+			"roleManager()": "00435da5",
+			"walls(uint256)": "550a3dba"
+		}
+	},
+	"abi": [
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "account",
+					"type": "address"
+				}
+			],
+			"name": "Paused",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "account",
+					"type": "address"
+				}
+			],
+			"name": "Unpaused",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "wallId",
+					"type": "uint256"
+				}
+			],
+			"name": "WallPainted",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "wallId",
+					"type": "uint256"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				}
+			],
+			"name": "WallTransferred",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "wallId",
+					"type": "uint256"
+				}
+			],
+			"name": "WallUpdated",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "ownerWalls",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "paused",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "roleManager",
+			"outputs": [
+				{
+					"internalType": "contract IRoleManager",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "walls",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "id",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"components": [
+						{
+							"internalType": "string",
+							"name": "country",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "city",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "physicalAddress",
+							"type": "string"
+						},
+						{
+							"internalType": "int256",
+							"name": "longitude",
+							"type": "int256"
+						},
+						{
+							"internalType": "int256",
+							"name": "latitude",
+							"type": "int256"
+						}
+					],
+					"internalType": "struct WallBase.Location",
+					"name": "location",
+					"type": "tuple"
+				},
+				{
+					"internalType": "uint256",
+					"name": "size",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bool",
+					"name": "isInGallery",
+					"type": "bool"
+				},
+				{
+					"internalType": "bool",
+					"name": "isPainted",
+					"type": "bool"
+				},
+				{
+					"internalType": "address",
+					"name": "galleryOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "createdAt",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "lastUpdated",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		}
+	]
+}
