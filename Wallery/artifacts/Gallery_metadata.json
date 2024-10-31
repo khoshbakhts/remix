@@ -922,11 +922,11 @@
 			]
 		},
 		"Wallery/Gallery.sol": {
-			"keccak256": "0x36f6d1c4ac6c5a3da71dd2838897b6f0e840a7b789c7f222694e2511fdd4013b",
+			"keccak256": "0x5f16ab9008fd808630b3bd53b899377a4514b6a1be08798ef0e0c1d1d46b7b40",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b364c2843c17a9fe73f3f8ee65496d8546918fb9012efe1f50e18db34a883133",
-				"dweb:/ipfs/QmdgbQKk6eVjxKcUdXe4yntdQK64syEKDxCCnP9EgzDqGB"
+				"bzz-raw://e8fb226e8c5fa2aecbc463f04b16dbdab6c9c0fa6b06c6138abf4201152be987",
+				"dweb:/ipfs/QmcgPZU2rqnW7KCzDzRRThdAa62LNiRfgAHBZR2bpqoSkB"
 			]
 		}
 	},

@@ -382,6 +382,45 @@
 						"type": "uint256"
 					}
 				],
+				"name": "debugPaintingRequest",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "isWallPainted",
+						"type": "bool"
+					},
+					{
+						"internalType": "enum PaintingNFT.PaintingStatus",
+						"name": "currentStatus",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bool",
+						"name": "isInGallery",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "hasPainterRole",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "wallId",
+						"type": "uint256"
+					}
+				],
 				"name": "finalizePainting",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -1150,11 +1189,11 @@
 			]
 		},
 		"Wallery/Painting.sol": {
-			"keccak256": "0x6dbc48f7c4ed0376d488423e9646933281298b3c7240fbf2203d15b7314db42c",
+			"keccak256": "0x877e7b520a9d0efd4ae3a74df1771adbbde75ece50775a95f109d0c73b5c8453",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5c9553dc81e833b8bdaf1c195ea61460072c4b9c3e552a451e87c0e168244a35",
-				"dweb:/ipfs/QmUk92jvSMNpmXao7NyJ24FCY2Te2TXfYKFBmBRMRCkYfR"
+				"bzz-raw://b7ca875970e328e6ea762de00423d92d2b159bf5159045a90e425a1b5708b421",
+				"dweb:/ipfs/QmbhhrVEhiiEFZgLUbXCjadXeQ2q2jn7TXRkaw3SK6sJYa"
 			]
 		}
 	},

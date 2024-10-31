@@ -19,18 +19,25 @@ interface IRoleManager {
 }
 
 interface IWall {
-    function getWall(uint256 wallId)
-        external
-        view
-        returns (
-            uint256 id,
-            address owner,
-            uint256 size,
-            uint256 ownershipPercentage,
-            bool isInGallery,
-            uint256 galleryId
-        );
+    struct WallData {
+        uint256 id;
+        address owner;
+        uint256 size;
+        uint256 ownershipPercentage;
+        bool isInGallery;
+        uint256 galleryId;
+    }
+
+    function getWall(uint256 wallId) external view returns (
+        uint256 id,
+        address owner,
+        uint256 size,
+        uint256 ownershipPercentage,
+        bool isInGallery,
+        uint256 galleryId
+    );
 }
+
 
 interface IGallery {
     struct Location {
@@ -195,30 +202,65 @@ contract PaintingNFT is ERC721, Pausable {
         return (isInGallery, galleryId, address(0), false);
     }
 
-    function requestPainting(uint256 wallId, string calldata description)
-        external
-        onlyPainter
-        whenNotPaused
-    {
-        require(!wallPainted[wallId], "Wall already painted");
-        require(
-            paintingRequests[wallId].status == PaintingStatus.None,
-            "Request already exists"
-        );
+function requestPainting(
+    uint256 wallId, 
+    string calldata description
+) external onlyPainter whenNotPaused {
+    // Add detailed checks with specific error messages
+    require(bytes(description).length > 0, "Description cannot be empty");
+    require(!wallPainted[wallId], "Wall already painted");
+    
+    // Check if there's an existing request
+    require(paintingRequests[wallId].status == PaintingStatus.None, 
+            "Request already exists for this wall");
 
-        (, , , , bool isInGallery, ) = wallContract.getWall(wallId);
-        require(isInGallery, "Wall not in gallery");
+    // Get wall data with detailed error handling
+    (
+        uint256 id,
+        address wallOwner,
+        uint256 size,
+        uint256 ownerPercentage,
+        bool isInGallery,
+        uint256 galleryId
+    ) = wallContract.getWall(wallId);
+    
+    // Verify wall exists
+    require(id == wallId, "Wall does not exist");
+    
+    // Check if wall is in gallery
+    require(isInGallery, "Wall not in gallery");
+    
+    // Create the request with explicit status
+    paintingRequests[wallId] = PaintingRequest({
+        wallId: wallId,
+        painter: msg.sender,
+        description: description,
+        status: PaintingStatus.Requested,
+        timestamp: block.timestamp
+    });
 
-        paintingRequests[wallId] = PaintingRequest({
-            wallId: wallId,
-            painter: msg.sender,
-            description: description,
-            status: PaintingStatus.Requested,
-            timestamp: block.timestamp
-        });
+    emit PaintingRequested(wallId, msg.sender);
+}
 
-        emit PaintingRequested(wallId, msg.sender);
-    }
+// Add a debug function to help identify issues
+function debugPaintingRequest(uint256 wallId) external view returns (
+    bool isWallPainted,
+    PaintingStatus currentStatus,
+    bool isInGallery,
+    uint256 galleryId,
+    bool hasPainterRole
+) {
+    (,,,,isInGallery, galleryId) = wallContract.getWall(wallId);
+    
+    return (
+        wallPainted[wallId],
+        paintingRequests[wallId].status,
+        isInGallery,
+        galleryId,
+        roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender)
+    );
+}
+
 
     function approvePaintingRequest(uint256 wallId) 
         external 

@@ -333,7 +333,7 @@ function isGalleryActive(uint256 galleryId) external view returns (bool) {
     ) {
         GalleryData memory gallery = galleries[galleryId];
         return (
-            gallery.id > 0,
+            gallery.id >= 0,
             gallery.owner != address(0),
             gallery.isActive,
             gallery.id,
