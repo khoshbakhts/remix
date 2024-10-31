@@ -1,0 +1,105 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"createSharesForPainting(uint256,address,address,address,address,uint256,uint256,uint256)": "17ba1245"
+		}
+	},
+	"abi": [
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "paintingId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "platformAdmin",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "wallOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "galleryOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "painter",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "platformPercentage",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "wallOwnerPercentage",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "galleryOwnerPercentage",
+					"type": "uint256"
+				}
+			],
+			"name": "createSharesForPainting",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+}

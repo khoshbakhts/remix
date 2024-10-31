@@ -6,32 +6,53 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 interface IRoleManager {
-    function hasRole(bytes32 role, address account) external view returns (bool);
+    function hasRole(bytes32 role, address account)
+        external
+        view
+        returns (bool);
+
     function ADMIN_ROLE() external view returns (bytes32);
+
     function PAINTER_ROLE() external view returns (bytes32);
+
     function GALLERY_OWNER_ROLE() external view returns (bytes32);
 }
 
 interface IWall {
-    function getWall(uint256 wallId) external view returns (
-        uint256 id,
-        address owner,
-        uint256 size,
-        uint256 ownershipPercentage,
-        bool isInGallery,
-        uint256 galleryId
-    );
+    function getWall(uint256 wallId)
+        external
+        view
+        returns (
+            uint256 id,
+            address owner,
+            uint256 size,
+            uint256 ownershipPercentage,
+            bool isInGallery,
+            uint256 galleryId
+        );
 }
 
 interface IGallery {
-    function galleries(uint256 galleryId) external view returns (
-        uint256 id,
-        string memory name,
-        string memory description,
-        address owner,
-        uint256 ownershipPercentage,
-        bool isActive
-    );
+    struct Location {
+        string city;
+        string country;
+        int256 longitude;
+        int256 latitude;
+    }
+
+    struct GalleryData {
+        uint256 id;
+        string name;
+        string description;
+        Location location;
+        address owner;
+        uint256 ownershipPercentage;
+        bool isActive;
+        uint256 createdAt;
+        uint256 lastUpdated;
+    }
+
+    function getGallery(uint256 galleryId) external view returns (GalleryData memory);
     function platformPercentage() external view returns (uint256);
 }
 
@@ -58,8 +79,13 @@ contract PaintingNFT is ERC721, Pausable {
 
     Counters.Counter private _paintingIds;
 
-    enum PaintingStatus { None, Requested, InProcess, Completed }
-    
+    enum PaintingStatus {
+        None,
+        Requested,
+        InProcess,
+        Completed
+    }
+
     struct PaintingRequest {
         uint256 wallId;
         address painter;
@@ -84,8 +110,14 @@ contract PaintingNFT is ERC721, Pausable {
 
     // Events
     event PaintingRequested(uint256 indexed wallId, address indexed painter);
-    event PaintingRequestApproved(uint256 indexed wallId, address indexed painter);
-    event PaintingRequestRejected(uint256 indexed wallId, address indexed painter);
+    event PaintingRequestApproved(
+        uint256 indexed wallId,
+        address indexed painter
+    );
+    event PaintingRequestRejected(
+        uint256 indexed wallId,
+        address indexed painter
+    );
     event PaintingCompleted(uint256 indexed paintingId, uint256 indexed wallId);
     event SharesCreated(uint256 indexed paintingId);
 
@@ -97,9 +129,15 @@ contract PaintingNFT is ERC721, Pausable {
     ) ERC721("Wall Painting", "WPAINT") {
         require(_roleManager != address(0), "Invalid RoleManager address");
         require(_wallContract != address(0), "Invalid Wall contract address");
-        require(_galleryContract != address(0), "Invalid Gallery contract address");
-        require(_paintingShares != address(0), "Invalid Shares contract address");
-        
+        require(
+            _galleryContract != address(0),
+            "Invalid Gallery contract address"
+        );
+        require(
+            _paintingShares != address(0),
+            "Invalid Shares contract address"
+        );
+
         roleManager = IRoleManager(_roleManager);
         wallContract = IWall(_wallContract);
         galleryContract = IGallery(_galleryContract);
@@ -107,29 +145,68 @@ contract PaintingNFT is ERC721, Pausable {
     }
 
     modifier onlyPainter() {
-        require(roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender), 
-                "Must have PAINTER_ROLE");
+        require(
+            roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender),
+            "Must have PAINTER_ROLE"
+        );
         _;
     }
 
     modifier onlyGalleryOwner(uint256 wallId) {
-        (,,,, bool isInGallery, uint256 galleryId) = wallContract.getWall(wallId);
+        (
+            ,  // id
+            ,  // owner
+            ,  // size
+            ,  // ownerPercentage
+            bool isInGallery,
+            uint256 galleryId
+        ) = wallContract.getWall(wallId);
+        
         require(isInGallery, "Wall not in gallery");
         
-        (,,,address galleryOwner,,) = galleryContract.galleries(galleryId);
-        require(msg.sender == galleryOwner, "Not gallery owner");
+        // Get gallery data directly
+        IGallery.GalleryData memory gallery = galleryContract.getGallery(galleryId);
+        require(gallery.isActive, "Gallery not active");
+        require(msg.sender == gallery.owner, "Not gallery owner");
         _;
     }
 
-    function requestPainting(
-        uint256 wallId, 
-        string calldata description
-    ) external onlyPainter whenNotPaused {
-        require(!wallPainted[wallId], "Wall already painted");
-        require(paintingRequests[wallId].status == PaintingStatus.None, 
-                "Request already exists");
+        function getGalleryDebugInfo(uint256 wallId) external view returns (
+        bool isInGallery,
+        uint256 galleryId,
+        address galleryOwner,
+        bool isActive
+    ) {
+        // Get wall data
+        (
+            ,  // id
+            ,  // owner
+            ,  // size
+            ,  // ownerPercentage
+            isInGallery,
+            galleryId
+        ) = wallContract.getWall(wallId);
+        
+        if (isInGallery) {
+            IGallery.GalleryData memory gallery = galleryContract.getGallery(galleryId);
+            return (isInGallery, galleryId, gallery.owner, gallery.isActive);
+        }
+        
+        return (isInGallery, galleryId, address(0), false);
+    }
 
-        (,,,, bool isInGallery,) = wallContract.getWall(wallId);
+    function requestPainting(uint256 wallId, string calldata description)
+        external
+        onlyPainter
+        whenNotPaused
+    {
+        require(!wallPainted[wallId], "Wall already painted");
+        require(
+            paintingRequests[wallId].status == PaintingStatus.None,
+            "Request already exists"
+        );
+
+        (, , , , bool isInGallery, ) = wallContract.getWall(wallId);
         require(isInGallery, "Wall not in gallery");
 
         paintingRequests[wallId] = PaintingRequest({
@@ -155,22 +232,26 @@ contract PaintingNFT is ERC721, Pausable {
         emit PaintingRequestApproved(wallId, request.painter);
     }
 
-    function rejectPaintingRequest(uint256 wallId) 
-        external 
-        onlyGalleryOwner(wallId) 
-        whenNotPaused 
+
+    function rejectPaintingRequest(uint256 wallId)
+        external
+        onlyGalleryOwner(wallId)
+        whenNotPaused
     {
         PaintingRequest storage request = paintingRequests[wallId];
-        require(request.status == PaintingStatus.Requested, "Invalid request status");
+        require(
+            request.status == PaintingStatus.Requested,
+            "Invalid request status"
+        );
 
         request.status = PaintingStatus.None;
         emit PaintingRequestRejected(wallId, request.painter);
     }
 
-    function submitPaintingCompletion(uint256 wallId) 
-        external 
-        onlyPainter 
-        whenNotPaused 
+    function submitPaintingCompletion(uint256 wallId)
+        external
+        onlyPainter
+        whenNotPaused
     {
         PaintingRequest storage request = paintingRequests[wallId];
         require(request.painter == msg.sender, "Not the assigned painter");
@@ -179,13 +260,16 @@ contract PaintingNFT is ERC721, Pausable {
         request.status = PaintingStatus.Completed;
     }
 
-    function finalizePainting(uint256 wallId) 
-        external 
-        onlyGalleryOwner(wallId) 
-        whenNotPaused 
+    function finalizePainting(uint256 wallId)
+        external
+        onlyGalleryOwner(wallId)
+        whenNotPaused
     {
         PaintingRequest storage request = paintingRequests[wallId];
-        require(request.status == PaintingStatus.Completed, "Painting not completed");
+        require(
+            request.status == PaintingStatus.Completed,
+            "Painting not completed"
+        );
 
         _paintingIds.increment();
         uint256 newPaintingId = _paintingIds.current();
@@ -204,40 +288,46 @@ contract PaintingNFT is ERC721, Pausable {
         });
 
         wallPainted[wallId] = true;
-        
+
         // Get ownership percentages and create shares
         _createShares(newPaintingId, wallId, request.painter);
 
         emit PaintingCompleted(newPaintingId, wallId);
     }
 
-    function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
-        require(!paintings[paintingId].sharesMinted, "Shares already minted");
+function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
+    require(!paintings[paintingId].sharesMinted, "Shares already minted");
 
-        // Get wall and gallery data
-        (,address wallOwner,,uint256 wallOwnerPercentage,, uint256 galleryId) = 
-            wallContract.getWall(wallId);
-        
-        (,,,address galleryOwner, uint256 galleryOwnerPercentage,) = 
-            galleryContract.galleries(galleryId);
-        
-        uint256 platformPercentage = galleryContract.platformPercentage();
+    // Get wall data
+    (
+        ,
+        address wallOwner,
+        ,
+        uint256 wallOwnerPercentage,
+        ,
+        uint256 galleryId
+    ) = wallContract.getWall(wallId);
+    
+    // Get gallery data using getGallery instead of galleries mapping
+    IGallery.GalleryData memory gallery = galleryContract.getGallery(galleryId);
+    
+    uint256 platformPercentage = galleryContract.platformPercentage();
 
-        // Create and distribute shares
-        paintingShares.createSharesForPainting(
-            paintingId,
-            _getPlatformAdmin(),
-            wallOwner,
-            galleryOwner,
-            painter,
-            platformPercentage,
-            wallOwnerPercentage,
-            galleryOwnerPercentage
-        );
+    // Create and distribute shares
+    paintingShares.createSharesForPainting(
+        paintingId,
+        _getPlatformAdmin(),
+        wallOwner,
+        gallery.owner,
+        painter,
+        platformPercentage,
+        wallOwnerPercentage,
+        gallery.ownershipPercentage
+    );
 
-        paintings[paintingId].sharesMinted = true;
-        emit SharesCreated(paintingId);
-    }
+    paintings[paintingId].sharesMinted = true;
+    emit SharesCreated(paintingId);
+}
 
     function _getPlatformAdmin() private view returns (address) {
         // Get the first admin address from RoleManager
@@ -246,14 +336,18 @@ contract PaintingNFT is ERC721, Pausable {
 
     // Admin functions
     function pause() external {
-        require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), 
-                "Must have ADMIN_ROLE");
+        require(
+            roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
+            "Must have ADMIN_ROLE"
+        );
         _pause();
     }
 
     function unpause() external {
-        require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), 
-                "Must have ADMIN_ROLE");
+        require(
+            roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
+            "Must have ADMIN_ROLE"
+        );
         _unpause();
     }
 }

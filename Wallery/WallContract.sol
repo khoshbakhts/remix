@@ -222,7 +222,7 @@ contract Wall is Pausable {
         onlyWallOwner(wallId)
         whenNotPaused 
     {
-        require(percentage <= 90, "Max ownership percentage is 90%");
+        require(percentage <= 50, "Max ownership percentage is 50%");
         
         walls[wallId].ownershipPercentage = percentage;
         walls[wallId].lastUpdated = block.timestamp;

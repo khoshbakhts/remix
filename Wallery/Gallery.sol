@@ -12,14 +12,27 @@ interface IRoleManager {
 }
 
 interface IWall {
-    function getWall(uint256 wallId) external view returns (
-        uint256 id,
-        address owner,
-        uint256 size,
-        uint256 ownershipPercentage,
-        bool isInGallery,
-        uint256 galleryId
-    );
+    struct Location {
+        string country;
+        string city;
+        string physicalAddress;
+        int256 longitude;
+        int256 latitude;
+    }
+
+    struct WallData {
+        uint256 id;
+        address owner;
+        Location location;
+        uint256 size;
+        uint256 ownershipPercentage;
+        bool isInGallery;
+        uint256 galleryId;
+        uint256 createdAt;
+        uint256 lastUpdated;
+    }
+
+    function getWall(uint256 wallId) external view returns (WallData memory);
     function setGalleryStatus(uint256 wallId, uint256 galleryId, bool inGallery) external;
 }
 
@@ -163,13 +176,13 @@ contract Gallery is Pausable {
         request.approved = true;
 
         galleries[requestId] = GalleryData({
-            id: requestId,
+            id: requestId,             // Make sure this is set correctly
             name: request.name,
             description: request.description,
             location: request.location,
             owner: request.requester,
             ownershipPercentage: request.ownershipPercentage,
-            isActive: true,
+            isActive: true,           // Make sure this is set to true
             createdAt: block.timestamp,
             lastUpdated: block.timestamp
         });
@@ -187,38 +200,31 @@ contract Gallery is Pausable {
         emit GalleryRequestRejected(requestId);
     }
 
-    function requestWallToGallery(uint256 galleryId, uint256 wallId) external whenNotPaused {
-        require(roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), msg.sender), 
-                "Must have WALL_OWNER_ROLE");
-        require(galleries[galleryId].isActive, "Gallery not active");
+   function requestWallToGallery(uint256 galleryId, uint256 wallId) external whenNotPaused {
+    require(roleManager.hasRole(roleManager.WALL_OWNER_ROLE(), msg.sender), 
+            "Must have WALL_OWNER_ROLE");
+    require(galleries[galleryId].isActive, "Gallery not active");
 
-        (
-            ,  // id
-            address wallOwner,
-            ,  // size
-            uint256 wallOwnerPercentage,
-            bool isInGallery,
-            // galleryId
-        ) = wallContract.getWall(wallId);
+    IWall.WallData memory wall = wallContract.getWall(wallId);
+    
+    require(wall.owner == msg.sender, "Not wall owner");
+    require(!wall.isInGallery, "Wall already in a gallery");
+    
+    uint256 totalPercentage = wall.ownershipPercentage + 
+                             galleries[galleryId].ownershipPercentage + 
+                             platformPercentage;
+    require(totalPercentage <= 100, "Total percentage exceeds 100%");
 
-        require(wallOwner == msg.sender, "Not wall owner");
-        require(!isInGallery, "Wall already in a gallery");
-        
-        uint256 totalPercentage = wallOwnerPercentage + 
-                                 galleries[galleryId].ownershipPercentage + 
-                                 platformPercentage;
-        require(totalPercentage <= 100, "Total percentage exceeds 100%");
+    wallToGalleryRequests[galleryId][wallId] = WallToGalleryRequest({
+        wallId: wallId,
+        wallOwner: msg.sender,
+        wallOwnerPercentage: wall.ownershipPercentage,
+        pending: true,
+        approved: false
+    });
 
-        wallToGalleryRequests[galleryId][wallId] = WallToGalleryRequest({
-            wallId: wallId,
-            wallOwner: msg.sender,
-            wallOwnerPercentage: wallOwnerPercentage,
-            pending: true,
-            approved: false
-        });
-
-        emit WallToGalleryRequested(galleryId, wallId, msg.sender);
-    }
+    emit WallToGalleryRequested(galleryId, wallId, msg.sender);
+}
 
     function approveWallToGallery(uint256 galleryId, uint256 wallId) 
         external 
@@ -280,9 +286,29 @@ contract Gallery is Pausable {
 
     // View functions
     function getGallery(uint256 galleryId) external view returns (GalleryData memory) {
-        require(galleries[galleryId].isActive, "Gallery not active");
-        return galleries[galleryId];
+        GalleryData memory gallery = galleries[galleryId];
+        require(gallery.owner != address(0), "Gallery does not exist");  // Changed check
+        return gallery;
     }
+
+        function debugGalleryState(uint256 galleryId) external view returns (
+        bool exists,
+        bool isActive,
+        address owner,
+        uint256 id
+    ) {
+        GalleryData memory gallery = galleries[galleryId];
+        return (
+            gallery.id == galleryId,
+            gallery.isActive,
+            gallery.owner,
+            gallery.id
+        );
+    }
+
+function isGalleryActive(uint256 galleryId) external view returns (bool) {
+    return galleries[galleryId].isActive;
+}
 
     function getGalleryWalls(uint256 galleryId) external view returns (uint256[] memory) {
         require(galleries[galleryId].isActive, "Gallery not active");
@@ -295,5 +321,29 @@ contract Gallery is Pausable {
 
     function unpause() external onlyAdmin {
         _unpause();
+    }
+
+        function verifyGalleryData(uint256 galleryId) external view returns (
+        bool exists,
+        bool hasOwner,
+        bool isActive,
+        uint256 actualId,
+        address owner,
+        uint256 createdAt
+    ) {
+        GalleryData memory gallery = galleries[galleryId];
+        return (
+            gallery.id > 0,
+            gallery.owner != address(0),
+            gallery.isActive,
+            gallery.id,
+            gallery.owner,
+            gallery.createdAt
+        );
+    }
+
+    // Function to check if gallery exists
+    function galleryExists(uint256 galleryId) external view returns (bool) {
+        return galleries[galleryId].owner != address(0);
     }
 }
