@@ -291,20 +291,21 @@ contract Gallery is Pausable {
         return gallery;
     }
 
-        function debugGalleryState(uint256 galleryId) external view returns (
-        bool exists,
-        bool isActive,
-        address owner,
-        uint256 id
-    ) {
-        GalleryData memory gallery = galleries[galleryId];
-        return (
-            gallery.id == galleryId,
-            gallery.isActive,
-            gallery.owner,
-            gallery.id
-        );
-    }
+function debugGalleryState(uint256 galleryId) external view returns (
+    bool exists,
+    bool isActive,
+    address owner,
+    uint256 id
+) {
+    GalleryData memory gallery = galleries[galleryId];
+    bool galleryExists = gallery.owner != address(0);  // Use consistent check
+    return (
+        galleryExists,
+        gallery.isActive,
+        gallery.owner,
+        gallery.id
+    );
+}
 
 function isGalleryActive(uint256 galleryId) external view returns (bool) {
     return galleries[galleryId].isActive;
@@ -323,27 +324,36 @@ function isGalleryActive(uint256 galleryId) external view returns (bool) {
         _unpause();
     }
 
-        function verifyGalleryData(uint256 galleryId) external view returns (
-        bool exists,
-        bool hasOwner,
-        bool isActive,
-        uint256 actualId,
-        address owner,
-        uint256 createdAt
-    ) {
-        GalleryData memory gallery = galleries[galleryId];
-        return (
-            gallery.id >= 0,
-            gallery.owner != address(0),
-            gallery.isActive,
-            gallery.id,
-            gallery.owner,
-            gallery.createdAt
-        );
-    }
+function verifyGalleryData(uint256 galleryId) external view returns (
+    bool exists,
+    bool hasOwner,
+    bool isActive,
+    uint256 actualId,
+    address owner,
+    uint256 createdAt
+) {
+    GalleryData memory gallery = galleries[galleryId];
+    bool galleryExists = gallery.owner != address(0);
+    return (
+        galleryExists,
+        gallery.owner != address(0),
+        gallery.isActive,
+        gallery.id,
+        gallery.owner,
+        gallery.createdAt
+    );
+}
 
     // Function to check if gallery exists
-    function galleryExists(uint256 galleryId) external view returns (bool) {
-        return galleries[galleryId].owner != address(0);
-    }
+function galleryExists(uint256 galleryId) external view returns (bool) {
+    return galleries[galleryId].owner != address(0);
+}
+
+function debugPlatformPercentage() external view returns (
+    uint256 percentage,
+    uint256 raw
+) {
+    return (platformPercentage, platformPercentage);
+}
+
 }

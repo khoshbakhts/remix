@@ -51,9 +51,9 @@ contract PaintingShares is Ownable, Pausable, ReentrancyGuard {
         uint256 value
     );
 
-    constructor(address initialOwner) Ownable(initialOwner) {
-        _pause(); // Start paused until PaintingNFT contract is set
-    }
+constructor(address initialOwner) Ownable(initialOwner) {
+    _pause(); // Start paused until PaintingNFT contract is set
+}
 
     modifier onlyPaintingNFT() {
         require(msg.sender == paintingNFTContract, "Only PaintingNFT contract");
@@ -65,58 +65,60 @@ contract PaintingShares is Ownable, Pausable, ReentrancyGuard {
         _;
     }
 
-    function setPaintingNFTContract(address _paintingNFTContract) external onlyOwner {
-        require(_paintingNFTContract != address(0), "Invalid address");
-        paintingNFTContract = _paintingNFTContract;
-        _unpause();
-    }
+function setPaintingNFTContract(address _paintingNFTContract) external onlyOwner {
+    require(_paintingNFTContract != address(0), "Invalid address");
+    paintingNFTContract = _paintingNFTContract;
+    _unpause();
+}
 
     function createSharesForPainting(
-        uint256 paintingId,
-        address platformAdmin,
-        address wallOwner,
-        address galleryOwner,
-        address painter,
-        uint256 platformPercentage,
-        uint256 wallOwnerPercentage,
-        uint256 galleryOwnerPercentage
-    ) external onlyPaintingNFT whenNotPaused {
-        require(!shares[paintingId].exists, "Shares already exist");
-        require(platformPercentage + wallOwnerPercentage + galleryOwnerPercentage <= 100, 
-                "Invalid percentages");
+    uint256 paintingId,
+    address platformAdmin,
+    address wallOwner,
+    address galleryOwner,
+    address painter,
+    uint256 platformPercentage,
+    uint256 wallOwnerPercentage,
+    uint256 galleryOwnerPercentage
+) external onlyPaintingNFT whenNotPaused {
+    require(!shares[paintingId].exists, "Shares already exist");
+    require(platformPercentage + wallOwnerPercentage + galleryOwnerPercentage <= 100, 
+            "Invalid percentages");
 
-        string memory name = string(abi.encodePacked("Painting ", _toString(paintingId), " Shares"));
-        string memory symbol = string(abi.encodePacked("PAINT", _toString(paintingId)));
+    string memory name = string(abi.encodePacked("Painting ", _toString(paintingId), " Shares"));
+    string memory symbol = string(abi.encodePacked("PAINT", _toString(paintingId)));
 
-        // Initialize share info
-        ShareInfo storage newShares = shares[paintingId];
-        newShares.name = name;
-        newShares.symbol = symbol;
-        newShares.exists = true;
-        newShares.totalSupply = TOTAL_SHARES;
+    // Initialize share info
+    ShareInfo storage newShares = shares[paintingId];
+    newShares.name = name;
+    newShares.symbol = symbol;
+    newShares.exists = true;
+    newShares.totalSupply = TOTAL_SHARES;
 
-        // Calculate shares
-        uint256 platformShares = (TOTAL_SHARES * platformPercentage) / 100;
-        uint256 wallOwnerShares = (TOTAL_SHARES * wallOwnerPercentage) / 100;
-        uint256 galleryOwnerShares = (TOTAL_SHARES * galleryOwnerPercentage) / 100;
-        uint256 painterShares = TOTAL_SHARES - platformShares - wallOwnerShares - galleryOwnerShares;
+    // Calculate shares ensuring platform gets its share
+    uint256 platformShares = (TOTAL_SHARES * platformPercentage) / 100;
+    require(platformShares > 0, "Platform shares cannot be 0");
+    
+    uint256 wallOwnerShares = (TOTAL_SHARES * wallOwnerPercentage) / 100;
+    uint256 galleryOwnerShares = (TOTAL_SHARES * galleryOwnerPercentage) / 100;
+    uint256 painterShares = TOTAL_SHARES - platformShares - wallOwnerShares - galleryOwnerShares;
 
-        // Distribute shares
-        _mintShares(paintingId, platformAdmin, platformShares);
-        _mintShares(paintingId, wallOwner, wallOwnerShares);
-        _mintShares(paintingId, galleryOwner, galleryOwnerShares);
-        _mintShares(paintingId, painter, painterShares);
+    // Distribute shares
+    _mintShares(paintingId, platformAdmin, platformShares);
+    _mintShares(paintingId, wallOwner, wallOwnerShares);
+    _mintShares(paintingId, galleryOwner, galleryOwnerShares);
+    _mintShares(paintingId, painter, painterShares);
 
-        emit SharesCreated(
-            paintingId,
-            name,
-            symbol,
-            platformShares,
-            wallOwnerShares,
-            galleryOwnerShares,
-            painterShares
-        );
-    }
+    emit SharesCreated(
+        paintingId,
+        name,
+        symbol,
+        platformShares,
+        wallOwnerShares,
+        galleryOwnerShares,
+        painterShares
+    );
+}
 
     function transfer(
         uint256 paintingId,
@@ -220,4 +222,24 @@ contract PaintingShares is Ownable, Pausable, ReentrancyGuard {
     function unpause() external onlyOwner {
         _unpause();
     }
+
+    function debugShareCalculation(
+    uint256 platformPercentage,
+    uint256 wallOwnerPercentage,
+    uint256 galleryOwnerPercentage
+) external pure returns (
+    uint256 platformShares,
+    uint256 wallOwnerShares,
+    uint256 galleryOwnerShares,
+    uint256 remainingShares
+) {
+    // Calculate shares exactly as in createSharesForPainting
+    platformShares = (TOTAL_SHARES * platformPercentage) / 100;
+    wallOwnerShares = (TOTAL_SHARES * wallOwnerPercentage) / 100;
+    galleryOwnerShares = (TOTAL_SHARES * galleryOwnerPercentage) / 100;
+    remainingShares = TOTAL_SHARES - platformShares - wallOwnerShares - galleryOwnerShares;
+    
+    return (platformShares, wallOwnerShares, galleryOwnerShares, remainingShares);
+}
+
 }

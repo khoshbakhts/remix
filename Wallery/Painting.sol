@@ -19,23 +19,27 @@ interface IRoleManager {
 }
 
 interface IWall {
+    struct Location {
+        string country;
+        string city;
+        string physicalAddress;
+        int256 longitude;
+        int256 latitude;
+    }
+
     struct WallData {
         uint256 id;
         address owner;
+        Location location;
         uint256 size;
         uint256 ownershipPercentage;
         bool isInGallery;
         uint256 galleryId;
+        uint256 createdAt;
+        uint256 lastUpdated;
     }
 
-    function getWall(uint256 wallId) external view returns (
-        uint256 id,
-        address owner,
-        uint256 size,
-        uint256 ownershipPercentage,
-        bool isInGallery,
-        uint256 galleryId
-    );
+    function getWall(uint256 wallId) external view returns (WallData memory);
 }
 
 
@@ -159,48 +163,34 @@ contract PaintingNFT is ERC721, Pausable {
         _;
     }
 
-    modifier onlyGalleryOwner(uint256 wallId) {
-        (
-            ,  // id
-            ,  // owner
-            ,  // size
-            ,  // ownerPercentage
-            bool isInGallery,
-            uint256 galleryId
-        ) = wallContract.getWall(wallId);
-        
-        require(isInGallery, "Wall not in gallery");
-        
-        // Get gallery data directly
-        IGallery.GalleryData memory gallery = galleryContract.getGallery(galleryId);
-        require(gallery.isActive, "Gallery not active");
-        require(msg.sender == gallery.owner, "Not gallery owner");
-        _;
-    }
+modifier onlyGalleryOwner(uint256 wallId) {
+    IWall.WallData memory wallData = wallContract.getWall(wallId);
+    require(wallData.isInGallery, "Wall not in gallery");
+    
+    // Get gallery data directly
+    IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
+    require(gallery.isActive, "Gallery not active");
+    require(msg.sender == gallery.owner, "Not gallery owner");
+    _;
+}
 
-        function getGalleryDebugInfo(uint256 wallId) external view returns (
-        bool isInGallery,
-        uint256 galleryId,
-        address galleryOwner,
-        bool isActive
-    ) {
-        // Get wall data
-        (
-            ,  // id
-            ,  // owner
-            ,  // size
-            ,  // ownerPercentage
-            isInGallery,
-            galleryId
-        ) = wallContract.getWall(wallId);
-        
-        if (isInGallery) {
-            IGallery.GalleryData memory gallery = galleryContract.getGallery(galleryId);
-            return (isInGallery, galleryId, gallery.owner, gallery.isActive);
-        }
-        
-        return (isInGallery, galleryId, address(0), false);
+
+function getGalleryDebugInfo(uint256 wallId) external view returns (
+    bool isInGallery,
+    uint256 galleryId,
+    address galleryOwner,
+    bool isActive
+) {
+    // Get wall data
+    IWall.WallData memory wallData = wallContract.getWall(wallId);
+    
+    if (wallData.isInGallery) {
+        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
+        return (wallData.isInGallery, wallData.galleryId, gallery.owner, gallery.isActive);
     }
+    
+    return (wallData.isInGallery, wallData.galleryId, address(0), false);
+}
 
 function requestPainting(
     uint256 wallId, 
@@ -215,20 +205,13 @@ function requestPainting(
             "Request already exists for this wall");
 
     // Get wall data with detailed error handling
-    (
-        uint256 id,
-        address wallOwner,
-        uint256 size,
-        uint256 ownerPercentage,
-        bool isInGallery,
-        uint256 galleryId
-    ) = wallContract.getWall(wallId);
+    IWall.WallData memory wallData = wallContract.getWall(wallId);
     
     // Verify wall exists
-    require(id == wallId, "Wall does not exist");
+    require(wallData.id == wallId, "Wall does not exist");
     
     // Check if wall is in gallery
-    require(isInGallery, "Wall not in gallery");
+    require(wallData.isInGallery, "Wall not in gallery");
     
     // Create the request with explicit status
     paintingRequests[wallId] = PaintingRequest({
@@ -250,13 +233,14 @@ function debugPaintingRequest(uint256 wallId) external view returns (
     uint256 galleryId,
     bool hasPainterRole
 ) {
-    (,,,,isInGallery, galleryId) = wallContract.getWall(wallId);
+    // Get wall data properly using the struct
+    IWall.WallData memory wallData = wallContract.getWall(wallId);
     
     return (
         wallPainted[wallId],
         paintingRequests[wallId].status,
-        isInGallery,
-        galleryId,
+        wallData.isInGallery,
+        wallData.galleryId,
         roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender)
     );
 }
@@ -341,17 +325,10 @@ function _createShares(uint256 paintingId, uint256 wallId, address painter) priv
     require(!paintings[paintingId].sharesMinted, "Shares already minted");
 
     // Get wall data
-    (
-        ,
-        address wallOwner,
-        ,
-        uint256 wallOwnerPercentage,
-        ,
-        uint256 galleryId
-    ) = wallContract.getWall(wallId);
+    IWall.WallData memory wallData = wallContract.getWall(wallId);
     
     // Get gallery data using getGallery instead of galleries mapping
-    IGallery.GalleryData memory gallery = galleryContract.getGallery(galleryId);
+    IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
     
     uint256 platformPercentage = galleryContract.platformPercentage();
 
@@ -359,11 +336,11 @@ function _createShares(uint256 paintingId, uint256 wallId, address painter) priv
     paintingShares.createSharesForPainting(
         paintingId,
         _getPlatformAdmin(),
-        wallOwner,
+        wallData.owner,
         gallery.owner,
         painter,
         platformPercentage,
-        wallOwnerPercentage,
+        wallData.ownershipPercentage,
         gallery.ownershipPercentage
     );
 

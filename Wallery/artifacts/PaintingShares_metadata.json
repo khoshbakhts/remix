@@ -341,6 +341,50 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "platformPercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "wallOwnerPercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "galleryOwnerPercentage",
+						"type": "uint256"
+					}
+				],
+				"name": "debugShareCalculation",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "platformShares",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "wallOwnerShares",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "galleryOwnerShares",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "remainingShares",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "paintingId",
 						"type": "uint256"
 					}
@@ -648,11 +692,11 @@
 			]
 		},
 		"Wallery/PaintingShares.sol": {
-			"keccak256": "0x74494b0a17668dc8d9e0ef84ae43ee0714f70bfd928314c863fe4292e36f5658",
+			"keccak256": "0xb22c07556e65afbfafc3d7023e3370da546a16600dcb98d69f9712fd8746dac1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0ca087dd33f7a4b4776d3b801562fae5d4bb728d9892c08c90cb8ff3771a18ac",
-				"dweb:/ipfs/Qmeyxcf5odbmnDpMebvFHvm8FECrpnvn6vpXHMDnkMaetY"
+				"bzz-raw://8e42a34a9a2ce02b9c013f36147f598146c5b964653c7c96c1a473c9dafeded7",
+				"dweb:/ipfs/QmP8hBNorLcGDdfw5ofFUaRuUz75JFead7kDpxNiaJ5rkD"
 			]
 		}
 	},

@@ -253,6 +253,24 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "debugPlatformPercentage",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "percentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "raw",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -922,11 +940,11 @@
 			]
 		},
 		"Wallery/Gallery.sol": {
-			"keccak256": "0x5f16ab9008fd808630b3bd53b899377a4514b6a1be08798ef0e0c1d1d46b7b40",
+			"keccak256": "0x27c68d6c2a7ffee37ee463879b1d5114e17ad017028f96097b9eb906dfe74b23",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e8fb226e8c5fa2aecbc463f04b16dbdab6c9c0fa6b06c6138abf4201152be987",
-				"dweb:/ipfs/QmcgPZU2rqnW7KCzDzRRThdAa62LNiRfgAHBZR2bpqoSkB"
+				"bzz-raw://a3b59edd174948518e71d773d0392303578a340d3d4a600719b108d1d8528c5e",
+				"dweb:/ipfs/QmZjAQWqTrzwjiqLLJ3ZY2ooMKhokDHCz2C4GS5Ddvnnio"
 			]
 		}
 	},
