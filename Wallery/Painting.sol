@@ -327,31 +327,31 @@ function _createShares(uint256 paintingId, uint256 wallId, address painter) priv
     // Get wall data
     IWall.WallData memory wallData = wallContract.getWall(wallId);
     
-    // Get gallery data using getGallery instead of galleries mapping
+    // Get gallery data
     IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
     
+    // Get platform percentage
     uint256 platformPercentage = galleryContract.platformPercentage();
 
-    // Create and distribute shares
+    require(platformPercentage + wallData.ownershipPercentage + gallery.ownershipPercentage <= 100, 
+            "Total percentage exceeds 100%");
+
+    // Create and distribute shares - platform admin is handled by PaintingShares
     paintingShares.createSharesForPainting(
         paintingId,
-        _getPlatformAdmin(),
-        wallData.owner,
-        gallery.owner,
-        painter,
-        platformPercentage,
-        wallData.ownershipPercentage,
-        gallery.ownershipPercentage
+        address(0),           // Platform admin will be replaced with owner in PaintingShares
+        wallData.owner,       // Wall owner
+        gallery.owner,        // Gallery owner
+        painter,             // Painter
+        platformPercentage,   // Platform percentage
+        wallData.ownershipPercentage,  // Wall owner percentage
+        gallery.ownershipPercentage    // Gallery owner percentage
     );
 
     paintings[paintingId].sharesMinted = true;
     emit SharesCreated(paintingId);
 }
 
-    function _getPlatformAdmin() private view returns (address) {
-        // Get the first admin address from RoleManager
-        return msg.sender; // This should be updated based on your admin management system
-    }
 
     // Admin functions
     function pause() external {

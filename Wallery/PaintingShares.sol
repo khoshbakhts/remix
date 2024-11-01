@@ -8,6 +8,13 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 contract PaintingShares is Ownable, Pausable, ReentrancyGuard {
     uint256 public constant TOTAL_SHARES = 100000;
 
+    struct ShareCalculation {
+        uint256 platformShares;
+        uint256 wallOwnerShares;
+        uint256 galleryOwnerShares;
+        uint256 painterShares;
+    }
+
     struct ShareInfo {
         string name;
         string symbol;
@@ -71,53 +78,114 @@ function setPaintingNFTContract(address _paintingNFTContract) external onlyOwner
     _unpause();
 }
 
-    function createSharesForPainting(
-    uint256 paintingId,
+  function createSharesForPainting(
+        uint256 paintingId,
+        address /* platformAdmin */,
+        address wallOwner,
+        address galleryOwner,
+        address painter,
+        uint256 platformPercentage,
+        uint256 wallOwnerPercentage,
+        uint256 galleryOwnerPercentage
+    ) external onlyPaintingNFT whenNotPaused {
+        require(!shares[paintingId].exists, "Shares already exist");
+        require(platformPercentage + wallOwnerPercentage + galleryOwnerPercentage <= 100, 
+                "Invalid percentages");
+
+        address platformAdmin = owner();
+        require(platformAdmin != galleryOwner, "Platform admin cannot be gallery owner");
+
+        // Initialize share info separately
+        _initializeShares(paintingId);
+
+        // Calculate and distribute shares
+        ShareCalculation memory calc = _calculateShares(
+            platformPercentage,
+            wallOwnerPercentage,
+            galleryOwnerPercentage
+        );
+
+        // Distribute shares
+        _distributeShares(
+            paintingId,
+            platformAdmin,
+            wallOwner,
+            galleryOwner,
+            painter,
+            calc
+        );
+
+        emit SharesCreated(
+            paintingId,
+            shares[paintingId].name,
+            shares[paintingId].symbol,
+            calc.platformShares,
+            calc.wallOwnerShares,
+            calc.galleryOwnerShares,
+            calc.painterShares
+        );
+    }
+
+        function _initializeShares(uint256 paintingId) private {
+        string memory name = string(abi.encodePacked("Painting ", _toString(paintingId), " Shares"));
+        string memory symbol = string(abi.encodePacked("PAINT", _toString(paintingId)));
+
+        ShareInfo storage newShares = shares[paintingId];
+        newShares.name = name;
+        newShares.symbol = symbol;
+        newShares.exists = true;
+        newShares.totalSupply = TOTAL_SHARES;
+    }
+
+        function _calculateShares(
+        uint256 platformPercentage,
+        uint256 wallOwnerPercentage,
+        uint256 galleryOwnerPercentage
+    ) private pure returns (ShareCalculation memory) {
+        uint256 platformShares = (TOTAL_SHARES * platformPercentage) / 100;
+        uint256 wallOwnerShares = (TOTAL_SHARES * wallOwnerPercentage) / 100;
+        uint256 galleryOwnerShares = (TOTAL_SHARES * galleryOwnerPercentage) / 100;
+        uint256 painterShares = TOTAL_SHARES - platformShares - wallOwnerShares - galleryOwnerShares;
+
+        return ShareCalculation({
+            platformShares: platformShares,
+            wallOwnerShares: wallOwnerShares,
+            galleryOwnerShares: galleryOwnerShares,
+            painterShares: painterShares
+        });
+    }
+
+    function _distributeShares(
+        uint256 paintingId,
+        address platformAdmin,
+        address wallOwner,
+        address galleryOwner,
+        address painter,
+        ShareCalculation memory calc
+    ) private {
+        if (calc.platformShares > 0) {
+            _mintShares(paintingId, platformAdmin, calc.platformShares);
+        }
+        if (calc.wallOwnerShares > 0) {
+            _mintShares(paintingId, wallOwner, calc.wallOwnerShares);
+        }
+        if (calc.galleryOwnerShares > 0) {
+            _mintShares(paintingId, galleryOwner, calc.galleryOwnerShares);
+        }
+        if (calc.painterShares > 0) {
+            _mintShares(paintingId, painter, calc.painterShares);
+        }
+    }
+
+
+function debugPlatformAdmin() external view returns (
     address platformAdmin,
-    address wallOwner,
-    address galleryOwner,
-    address painter,
-    uint256 platformPercentage,
-    uint256 wallOwnerPercentage,
-    uint256 galleryOwnerPercentage
-) external onlyPaintingNFT whenNotPaused {
-    require(!shares[paintingId].exists, "Shares already exist");
-    require(platformPercentage + wallOwnerPercentage + galleryOwnerPercentage <= 100, 
-            "Invalid percentages");
-
-    string memory name = string(abi.encodePacked("Painting ", _toString(paintingId), " Shares"));
-    string memory symbol = string(abi.encodePacked("PAINT", _toString(paintingId)));
-
-    // Initialize share info
-    ShareInfo storage newShares = shares[paintingId];
-    newShares.name = name;
-    newShares.symbol = symbol;
-    newShares.exists = true;
-    newShares.totalSupply = TOTAL_SHARES;
-
-    // Calculate shares ensuring platform gets its share
-    uint256 platformShares = (TOTAL_SHARES * platformPercentage) / 100;
-    require(platformShares > 0, "Platform shares cannot be 0");
-    
-    uint256 wallOwnerShares = (TOTAL_SHARES * wallOwnerPercentage) / 100;
-    uint256 galleryOwnerShares = (TOTAL_SHARES * galleryOwnerPercentage) / 100;
-    uint256 painterShares = TOTAL_SHARES - platformShares - wallOwnerShares - galleryOwnerShares;
-
-    // Distribute shares
-    _mintShares(paintingId, platformAdmin, platformShares);
-    _mintShares(paintingId, wallOwner, wallOwnerShares);
-    _mintShares(paintingId, galleryOwner, galleryOwnerShares);
-    _mintShares(paintingId, painter, painterShares);
-
-    emit SharesCreated(
-        paintingId,
-        name,
-        symbol,
-        platformShares,
-        wallOwnerShares,
-        galleryOwnerShares,
-        painterShares
-    );
+    uint256 paintingId,
+    uint256 adminShares
+) {
+    platformAdmin = owner();
+    // You can add more debugging info here if needed
+    return (platformAdmin, 0, 0);
 }
 
     function transfer(

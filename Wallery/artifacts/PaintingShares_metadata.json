@@ -298,7 +298,7 @@
 					},
 					{
 						"internalType": "address",
-						"name": "platformAdmin",
+						"name": "",
 						"type": "address"
 					},
 					{
@@ -335,6 +335,29 @@
 				"name": "createSharesForPainting",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "debugPlatformAdmin",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "platformAdmin",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "paintingId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "adminShares",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -692,11 +715,11 @@
 			]
 		},
 		"Wallery/PaintingShares.sol": {
-			"keccak256": "0xb22c07556e65afbfafc3d7023e3370da546a16600dcb98d69f9712fd8746dac1",
+			"keccak256": "0x79dffe2623e9229340c3300e7158a5c2db0d1c38af60d0fa294a201444041278",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8e42a34a9a2ce02b9c013f36147f598146c5b964653c7c96c1a473c9dafeded7",
-				"dweb:/ipfs/QmP8hBNorLcGDdfw5ofFUaRuUz75JFead7kDpxNiaJ5rkD"
+				"bzz-raw://4d8f81d7be7e9df173b63552139c8ffa4b62477fb50206d469d743c7ed850356",
+				"dweb:/ipfs/QmZbwiVQf26FQVrCZGzoM786cPyLG7L3vj8smf1zaVcWEB"
 			]
 		}
 	},
