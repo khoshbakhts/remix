@@ -92,6 +92,7 @@ contract Gallery is Pausable {
         uint256 ownershipPercentage;
     }
 
+
     // Storage
     mapping(uint256 => GalleryData) public galleries;
     mapping(uint256 => GalleryRequest) public galleryRequests;
@@ -285,6 +286,26 @@ contract Gallery is Pausable {
     }
 
     // View functions
+    function getGalleriesByOwner(address _owner) external view returns (GalleryData[] memory) {
+        uint256 count = 0;
+        for (uint256 i = 0; i < _galleryIds.current(); i++) {
+            if (galleries[i].owner == _owner) {
+                count++;
+            }
+        }
+
+        GalleryData[] memory result = new GalleryData[](count);
+        uint256 index = 0;
+        for (uint256 i = 0; i < _galleryIds.current(); i++) {
+            if (galleries[i].owner == _owner) {
+                result[index] = galleries[i];
+                index++;
+            }
+        }
+
+        return result;
+    }
+
     function getGallery(uint256 galleryId) external view returns (GalleryData memory) {
         GalleryData memory gallery = galleries[galleryId];
         require(gallery.owner != address(0), "Gallery does not exist");  // Changed check
