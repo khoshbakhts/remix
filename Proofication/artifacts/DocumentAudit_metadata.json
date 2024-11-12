@@ -6,7 +6,13 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [],
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "trustedForwarder",
+						"type": "address"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
 			},
@@ -64,6 +70,12 @@
 						"internalType": "string",
 						"name": "identifier",
 						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "isGasless",
+						"type": "bool"
 					}
 				],
 				"name": "DocumentRegistered",
@@ -173,6 +185,11 @@
 						"internalType": "string",
 						"name": "identifier",
 						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isGasless",
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -225,6 +242,25 @@
 					}
 				],
 				"name": "isDocumentRegistered",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "forwarder",
+						"type": "address"
+					}
+				],
+				"name": "isTrustedForwarder",
 				"outputs": [
 					{
 						"internalType": "bool",
@@ -289,9 +325,70 @@
 						"internalType": "string",
 						"name": "identifier",
 						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "useGasless",
+						"type": "bool"
 					}
 				],
 				"name": "registerDocument",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "documentHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "registrantName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "organization",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "identifier",
+						"type": "string"
+					}
+				],
+				"name": "registerDocumentGasless",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "documentHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "registrantName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "organization",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "identifier",
+						"type": "string"
+					}
+				],
+				"name": "registerDocumentWithGas",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -314,6 +411,11 @@
 						"internalType": "address",
 						"name": "newOwner",
 						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "useGasless",
+						"type": "bool"
 					}
 				],
 				"name": "transferDocumentOwnership",
@@ -332,6 +434,19 @@
 				"name": "transferOwnership",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "trustedForwarder",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -384,6 +499,9 @@
 			},
 			"kind": "dev",
 			"methods": {
+				"isTrustedForwarder(address)": {
+					"details": "Indicates whether any particular address is the trusted forwarder."
+				},
 				"owner()": {
 					"details": "Returns the address of the current owner."
 				},
@@ -395,6 +513,9 @@
 				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				},
+				"trustedForwarder()": {
+					"details": "Returns the address of the trusted forwarder."
 				}
 			},
 			"version": 1
@@ -429,6 +550,14 @@
 				"dweb:/ipfs/QmfEckWLmZkDDcoWrkEvMWhms66xwTLff9DDhegYpvHo1a"
 			]
 		},
+		"@openzeppelin/contracts/metatx/ERC2771Context.sol": {
+			"keccak256": "0x0b030a33274bde015419d99e54c9164f876a7d10eb590317b79b1d5e4ab23d99",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://68e5f96988198e8efd25ddef0d89750b4daebb7fd1204fa7f5eaccdfcb3398c8",
+				"dweb:/ipfs/QmaM6nNkf9UmEtQraopuZamEWCdTWp7GvuN3pjMQrNCHxm"
+			]
+		},
 		"@openzeppelin/contracts/security/Pausable.sol": {
 			"keccak256": "0x0849d93b16c9940beb286a7864ed02724b248b93e0d80ef6355af5ef15c64773",
 			"license": "MIT",
@@ -446,11 +575,11 @@
 			]
 		},
 		"Proofication/DocumentAudit.sol": {
-			"keccak256": "0x7432d57bfa730bab83e5532ee821475036e04bfac46733f21048a720157d4407",
+			"keccak256": "0x13a7b3bb0f3ddd3a4d6da45c625233ba85028a487fad95aaf7ec421c33e87b06",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6b869254e05cc2f958df1ca52a4d8f106846f768887e1241a1f25d5553065136",
-				"dweb:/ipfs/QmfDSkzDu1NriQjm7jkFG69ioSQxY7Rc9Ac9QBFUyMJQFw"
+				"bzz-raw://07a3834260e546ed8dffea27d1b6169eef09f579d04114d6874d9e9e73a56d1f",
+				"dweb:/ipfs/QmPh3Xrb3pihG3y1nWotfnGmg61tEWcEqeNqRhGTVFxvCB"
 			]
 		}
 	},
