@@ -13,7 +13,6 @@ contract SignNFT is ERC721, ERC721Enumerable, Pausable, AccessControl {
     bytes32 public constant GAME_MANAGER_ROLE = keccak256("GAME_MANAGER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
-    // Struct to store SIGN data
     struct SignData {
         uint256 homeLocationLat;
         uint256 homeLocationLong;
@@ -22,15 +21,12 @@ contract SignNFT is ERC721, ERC721Enumerable, Pausable, AccessControl {
         uint256 weight;
         uint256 lastMoveTimestamp;
         address[] carriers;
+        bool exists;
     }
 
-    // Mapping from token ID to Sign data
     mapping(uint256 => SignData) private _signData;
-    
-    // Mapping to track if an address has a SIGN
     mapping(address => bool) private _hasSign;
 
-    // Events
     event SignMinted(address indexed to, uint256 indexed tokenId, uint256 homeLocationLat, uint256 homeLocationLong);
     event SignMoved(uint256 indexed tokenId, uint256 newLat, uint256 newLong, address indexed carrier);
     event HomeLocationUpdated(uint256 indexed tokenId, uint256 newLat, uint256 newLong);
@@ -40,18 +36,16 @@ contract SignNFT is ERC721, ERC721Enumerable, Pausable, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    // Modifiers
     modifier onlyGameManager() {
         require(hasRole(GAME_MANAGER_ROLE, msg.sender), "Caller is not a game manager");
         _;
     }
 
     modifier signExists(uint256 tokenId) {
-        require(_exists(tokenId), "Sign does not exist");
+        require(_signData[tokenId].exists, "Sign does not exist");
         _;
     }
 
-    // Main functions
     function mint(address to, uint256 homeLocationLat, uint256 homeLocationLong) 
         external 
         onlyGameManager 
@@ -73,6 +67,7 @@ contract SignNFT is ERC721, ERC721Enumerable, Pausable, AccessControl {
         newSign.currentLocationLong = homeLocationLong;
         newSign.weight = 100; // Initial weight
         newSign.lastMoveTimestamp = block.timestamp;
+        newSign.exists = true;
         
         emit SignMinted(to, tokenId, homeLocationLat, homeLocationLong);
         return tokenId;
@@ -121,13 +116,11 @@ contract SignNFT is ERC721, ERC721Enumerable, Pausable, AccessControl {
         
         SignData storage sign = _signData[tokenId];
         sign.carriers.push(carrier);
-        // Increase weight with each carrier
         sign.weight += 10;
 
         emit CarrierAdded(tokenId, carrier);
     }
 
-    // View functions
     function getSignLocation(uint256 tokenId) 
         external 
         view 
@@ -179,18 +172,25 @@ contract SignNFT is ERC721, ERC721Enumerable, Pausable, AccessControl {
         return _hasSign[owner];
     }
 
-    // Override required functions
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
-        require(from == address(0) || to == address(0), "SIGN tokens cannot be transferred");
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    // Required overrides for OpenZeppelin V5
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        virtual
+        override(ERC721, ERC721Enumerable)
+        returns (address)
+    {
+        require(auth == address(0) || to == address(0), "SIGN tokens cannot be transferred");
+        return super._update(to, tokenId, auth);
     }
 
-    // Required overrides
+    function _increaseBalance(address account, uint128 amount)
+        internal
+        virtual
+        override(ERC721, ERC721Enumerable)
+    {
+        super._increaseBalance(account, amount);
+    }
+
     function supportsInterface(bytes4 interfaceId)
         public
         view
