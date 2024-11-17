@@ -1,0 +1,453 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_signToken",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "SignCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "dropper",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					}
+				],
+				"name": "SignDropped",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "mover",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "newLocation",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "paidAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "SignMoved",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "picker",
+						"type": "address"
+					}
+				],
+				"name": "SignPickedUp",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newWage",
+						"type": "uint256"
+					}
+				],
+				"name": "WageUpdated",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "MAXIMUM_HOLD_TIME",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MINIMUM_DROP_TIME",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MINIMUM_PICKUP_INTERVAL",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "homeLocation",
+						"type": "string"
+					}
+				],
+				"name": "createSign",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "newLocation",
+						"type": "string"
+					}
+				],
+				"name": "dropSign",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "carrier",
+						"type": "address"
+					}
+				],
+				"name": "getCarrierStats",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "totalMoves",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalDistance",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalEarned",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct SignityNFT.Carrier",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner_",
+						"type": "address"
+					}
+				],
+				"name": "getOwnedSigns",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSignDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "owner",
+								"type": "address"
+							},
+							{
+								"internalType": "string",
+								"name": "homeLocation",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "wage",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "currentHolder",
+								"type": "address"
+							},
+							{
+								"internalType": "bool",
+								"name": "isPickedUp",
+								"type": "bool"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastDropTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "currentLocation",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalMoves",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalDistance",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct SignityNFT.Sign",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "radius",
+						"type": "uint256"
+					}
+				],
+				"name": "getSignsNearby",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "pickupSign",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "newWage",
+						"type": "uint256"
+					}
+				],
+				"name": "setWage",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "signToken",
+				"outputs": [
+					{
+						"internalType": "contract ISignToken",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Signity/SignityNFT.sol": "SignityNFT"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Signity/SignityNFT.sol": {
+			"keccak256": "0x52a70d2911c3109b7cfa8f0b4e2139de9a8d1a3e1b789d31b3385fe670e6b5b4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ea063b1068e972fae39c3c8cdcadd719c924c908e49f49c9686d772d6e65bf29",
+				"dweb:/ipfs/QmWokKwuntu6Q4CKbAENdKcQtRrE15pkN3pFsc6g8x6qoC"
+			]
+		}
+	},
+	"version": 1
+}

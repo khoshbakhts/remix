@@ -1,0 +1,110 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSignDetails",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "homeLocation",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "wage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "currentHolder",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "isPickedUp",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lastDropTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "currentLocation",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalMoves",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalDistance",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Signity/SignityRelationship.sol": "ISignityNFT"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Signity/SignityRelationship.sol": {
+			"keccak256": "0x3beab013284dde7083d7fc62057c83875b15cebe15ce62aa219d3c690c703fb3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6de42187466da262ff4fdb09bcc385c935776228804342461c898565ea9011c6",
+				"dweb:/ipfs/QmPV78Uva7eTEhcbkoJDH15un2WXEH4aNDF715vi7bdt9X"
+			]
+		}
+	},
+	"version": 1
+}

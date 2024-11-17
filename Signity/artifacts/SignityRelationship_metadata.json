@@ -1,0 +1,565 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_signToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_signityNFT",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "parentSign1",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "parentSign2",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "childSignId",
+						"type": "uint256"
+					}
+				],
+				"name": "ChildBorn",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "signId1",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "signId2",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "marriageDate",
+						"type": "uint256"
+					}
+				],
+				"name": "MarriageAccepted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "signId1",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "signId2",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "divorceDate",
+						"type": "uint256"
+					}
+				],
+				"name": "MarriageDivorced",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "signId1",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "signId2",
+						"type": "uint256"
+					}
+				],
+				"name": "MarriageProposed",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "CHILD_COOLDOWN",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "DIVORCE_COOLDOWN",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_CHILDREN",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "toSignId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fromSignId",
+						"type": "uint256"
+					}
+				],
+				"name": "acceptMarriage",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "children",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "parentSign1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "parentSign2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "birthDate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "exists",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "signId",
+						"type": "uint256"
+					}
+				],
+				"name": "divorce",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "childSignId",
+						"type": "uint256"
+					}
+				],
+				"name": "getChildDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "parentSign1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "parentSign2",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "birthDate",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "exists",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct SignityRelationship.Child",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "signId",
+						"type": "uint256"
+					}
+				],
+				"name": "getMarriageDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "signId1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "signId2",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "marriageDate",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "isActive",
+								"type": "bool"
+							},
+							{
+								"internalType": "uint256[]",
+								"name": "children",
+								"type": "uint256[]"
+							}
+						],
+						"internalType": "struct SignityRelationship.Marriage",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "signId",
+						"type": "uint256"
+					}
+				],
+				"name": "isMarried",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "lastChildBirth",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "lastDivorceDate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "marriages",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "signId1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "signId2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marriageDate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "proposalExpiry",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "proposalTo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "fromSignId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "toSignId",
+						"type": "uint256"
+					}
+				],
+				"name": "proposeMarriage",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "signId",
+						"type": "uint256"
+					}
+				],
+				"name": "requestChild",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "signToken",
+				"outputs": [
+					{
+						"internalType": "contract ISignToken",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "signityNFT",
+				"outputs": [
+					{
+						"internalType": "contract ISignityNFT",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "spouseOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Signity/SignityRelationship.sol": "SignityRelationship"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Signity/SignityRelationship.sol": {
+			"keccak256": "0x3beab013284dde7083d7fc62057c83875b15cebe15ce62aa219d3c690c703fb3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6de42187466da262ff4fdb09bcc385c935776228804342461c898565ea9011c6",
+				"dweb:/ipfs/QmPV78Uva7eTEhcbkoJDH15un2WXEH4aNDF715vi7bdt9X"
+			]
+		}
+	},
+	"version": 1
+}
