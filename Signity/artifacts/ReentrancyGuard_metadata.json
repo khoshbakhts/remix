@@ -18,7 +18,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Signity/SignToken.sol": "ReentrancyGuard"
+			"Signity/SignityToken.sol": "ReentrancyGuard"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -32,7 +32,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"Signity/SignToken.sol": {
+		"Signity/SignityToken.sol": {
 			"keccak256": "0x0d2e4b56fc3e1f478aba9235406e3d800ede5f9d4d55b9567f03df73ab242679",
 			"license": "MIT",
 			"urls": [

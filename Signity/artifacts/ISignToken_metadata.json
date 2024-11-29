@@ -9,6 +9,42 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "burn",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "mint",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "to",
 						"type": "address"
 					},
@@ -19,35 +55,6 @@
 					}
 				],
 				"name": "transfer",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "from",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "transferFrom",
 				"outputs": [
 					{
 						"internalType": "bool",
@@ -72,7 +79,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Signity/SignityRelationship.sol": "ISignToken"
+			"Signity/SignityNFT.sol": "ISignToken"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -86,12 +93,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Signity/SignityRelationship.sol": {
-			"keccak256": "0x3beab013284dde7083d7fc62057c83875b15cebe15ce62aa219d3c690c703fb3",
+		"Signity/SignityNFT.sol": {
+			"keccak256": "0x52a70d2911c3109b7cfa8f0b4e2139de9a8d1a3e1b789d31b3385fe670e6b5b4",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6de42187466da262ff4fdb09bcc385c935776228804342461c898565ea9011c6",
-				"dweb:/ipfs/QmPV78Uva7eTEhcbkoJDH15un2WXEH4aNDF715vi7bdt9X"
+				"bzz-raw://ea063b1068e972fae39c3c8cdcadd719c924c908e49f49c9686d772d6e65bf29",
+				"dweb:/ipfs/QmWokKwuntu6Q4CKbAENdKcQtRrE15pkN3pFsc6g8x6qoC"
 			]
 		}
 	},
