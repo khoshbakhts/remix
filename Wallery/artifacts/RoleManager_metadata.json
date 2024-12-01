@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.26+commit.8a97fa7a"
 	},
 	"language": "Solidity",
 	"output": {
@@ -234,6 +234,64 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					}
+				],
+				"name": "UserInfoRequestApproved",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					}
+				],
+				"name": "UserInfoRequestRejected",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "isUpdate",
+						"type": "bool"
+					}
+				],
+				"name": "UserInfoRequested",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "UserInfoUpdated",
+				"type": "event"
+			},
+			{
 				"inputs": [],
 				"name": "ADMIN_ROLE",
 				"outputs": [
@@ -325,6 +383,19 @@
 					}
 				],
 				"name": "approveRoleRequest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					}
+				],
+				"name": "approveUserInfoRequest",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -453,6 +524,45 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "getUserInfo",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "firstName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "lastName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "organization",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "walletAddress",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "bytes32",
 						"name": "role",
 						"type": "bytes32"
@@ -572,6 +682,19 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					}
+				],
+				"name": "rejectUserInfoRequest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "bytes32",
 						"name": "role",
 						"type": "bytes32"
@@ -601,6 +724,34 @@
 					}
 				],
 				"name": "requestRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "firstName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "lastName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "organization",
+						"type": "string"
+					}
+				],
+				"name": "requestUserInfo",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -709,6 +860,111 @@
 				"name": "unpause",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "userInfo",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "firstName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "lastName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "organization",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "walletAddress",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "userInfoRequests",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "firstName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "lastName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "organization",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "walletAddress",
+								"type": "address"
+							}
+						],
+						"internalType": "struct RoleManager.UserInfo",
+						"name": "info",
+						"type": "tuple"
+					},
+					{
+						"internalType": "bool",
+						"name": "isUpdate",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "pending",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "approved",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			}
 		],
@@ -819,7 +1075,7 @@
 		"compilationTarget": {
 			"Wallery/Rolemanager.sol": "RoleManager"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "cancun",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -880,11 +1136,10 @@
 			]
 		},
 		"Wallery/Rolemanager.sol": {
-			"keccak256": "0x50afc570a2fe7195a904b9b85ae2988bb6e6b49b884dd0db086a4d625aa78649",
-			"license": "MIT",
+			"keccak256": "0x9ea2941c3b8480f11c426a1316a74411e49f610e990b69b9121170db803819c8",
 			"urls": [
-				"bzz-raw://f2f5ae813a8527c18469be697230829e46fc96435d175aefce2f75e7e6a85bad",
-				"dweb:/ipfs/QmaSb3Eqm7BETujDi3M9yft1Zz7ezxx5cHA95rDr3Mwyuq"
+				"bzz-raw://519aafba12b13a34e0b79a74ad85b0651d0aa1ce307d0905e957ab59bd9ab7a9",
+				"dweb:/ipfs/QmTZuCQzY7dCJEVLd4nNeMEhPgw8QXdRqZ8JwAeSrzPRVa"
 			]
 		}
 	},

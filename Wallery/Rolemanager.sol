@@ -1,18 +1,31 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract RoleManager is AccessControl, Pausable {
-    // Role definitions
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant WALL_OWNER_ROLE = keccak256("WALL_OWNER_ROLE");
     bytes32 public constant PAINTER_ROLE = keccak256("PAINTER_ROLE");
     bytes32 public constant GALLERY_OWNER_ROLE = keccak256("GALLERY_OWNER_ROLE");
     bytes32 public constant SPONSOR_ROLE = keccak256("SPONSOR_ROLE");
 
-    // Struct to store role request details
+    struct UserInfo {
+        string firstName;
+        string lastName;
+        string email;
+        string organization;
+        address walletAddress;
+    }
+
+    struct UserInfoRequest {
+        address requester;
+        UserInfo info;
+        bool isUpdate;
+        bool pending;
+        bool approved;
+    }
+
     struct RoleRequest {
         address requester;
         bytes32 role;
@@ -21,13 +34,15 @@ contract RoleManager is AccessControl, Pausable {
         bool approved;
     }
 
-    // Mapping to track role requests: user address => role => request
+    mapping(address => UserInfo) public userInfo;
+    mapping(address => UserInfoRequest) public userInfoRequests;
     mapping(address => mapping(bytes32 => RoleRequest)) public roleRequests;
-    
-    // Array to store all pending requests for easy retrieval
     RoleRequest[] public pendingRequests;
-    
-    // Events
+
+    event UserInfoRequested(address indexed requester, bool isUpdate);
+    event UserInfoRequestApproved(address indexed requester);
+    event UserInfoRequestRejected(address indexed requester);
+    event UserInfoUpdated(address indexed user);
     event RoleRequested(address indexed requester, bytes32 indexed role, string reason);
     event RoleRequestApproved(address indexed requester, bytes32 indexed role);
     event RoleRequestRejected(address indexed requester, bytes32 indexed role);
@@ -37,6 +52,76 @@ contract RoleManager is AccessControl, Pausable {
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(ADMIN_ROLE, msg.sender);
+    }
+
+    function requestUserInfo(
+        string memory firstName,
+        string memory lastName,
+        string memory email,
+        string memory organization
+    ) public whenNotPaused {
+        require(bytes(firstName).length > 0, "First name required");
+        require(bytes(lastName).length > 0, "Last name required");
+        require(bytes(email).length > 0, "Email required");
+        
+        UserInfo memory info = UserInfo({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            organization: organization,
+            walletAddress: msg.sender
+        });
+
+        bool isUpdate = userInfo[msg.sender].walletAddress != address(0);
+        
+        userInfoRequests[msg.sender] = UserInfoRequest({
+            requester: msg.sender,
+            info: info,
+            isUpdate: isUpdate,
+            pending: true,
+            approved: false
+        });
+
+        emit UserInfoRequested(msg.sender, isUpdate);
+    }
+
+    function approveUserInfoRequest(address requester) public onlyRole(ADMIN_ROLE) whenNotPaused {
+        UserInfoRequest storage request = userInfoRequests[requester];
+        require(request.pending, "No pending request");
+
+        request.pending = false;
+        request.approved = true;
+        userInfo[requester] = request.info;
+
+        emit UserInfoRequestApproved(requester);
+        emit UserInfoUpdated(requester);
+    }
+
+    function rejectUserInfoRequest(address requester) public onlyRole(ADMIN_ROLE) whenNotPaused {
+        UserInfoRequest storage request = userInfoRequests[requester];
+        require(request.pending, "No pending request");
+
+        request.pending = false;
+        request.approved = false;
+
+        emit UserInfoRequestRejected(requester);
+    }
+
+    function getUserInfo(address user) public view returns (
+        string memory firstName,
+        string memory lastName,
+        string memory email,
+        string memory organization,
+        address walletAddress
+    ) {
+        UserInfo memory info = userInfo[user];
+        return (
+            info.firstName,
+            info.lastName,
+            info.email,
+            info.organization,
+            info.walletAddress
+        );
     }
 
     /**
