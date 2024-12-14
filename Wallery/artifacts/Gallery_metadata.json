@@ -222,58 +222,6 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "galleryId",
-						"type": "uint256"
-					}
-				],
-				"name": "debugGalleryState",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "exists",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "isActive",
-						"type": "bool"
-					},
-					{
-						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "debugPlatformPercentage",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "percentage",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "raw",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
 					}
@@ -668,6 +616,52 @@
 						"type": "uint256"
 					}
 				],
+				"name": "getPendingWallRequests",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "wallId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "wallOwner",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "wallOwnerPercentage",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "pending",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "approved",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Gallery.WallToGalleryRequest[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
+					}
+				],
 				"name": "isGalleryActive",
 				"outputs": [
 					{
@@ -694,6 +688,30 @@
 						"internalType": "bool",
 						"name": "",
 						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "pendingWallsPerGallery",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -863,50 +881,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "galleryId",
-						"type": "uint256"
-					}
-				],
-				"name": "verifyGalleryData",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "exists",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "hasOwner",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "isActive",
-						"type": "bool"
-					},
-					{
-						"internalType": "uint256",
-						"name": "actualId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "createdAt",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "wallContract",
 				"outputs": [
@@ -1028,11 +1002,11 @@
 			]
 		},
 		"Wallery/Gallery.sol": {
-			"keccak256": "0xa1c4b04bb3db6412a9734f366e1727240a1d9beae4ebd520d1f7268d87559571",
+			"keccak256": "0xa82e1cf10ad5a74fb52eb33b58de23e7c31332f0c69cfdd4913f8397eba4a552",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fdbffb122ea9e879d83274662baaf588d701b940047c198843f0187b20efedf7",
-				"dweb:/ipfs/QmaupyXqaoMSL2yfs5tXC3txHHb2ydkmTVsXpYKoLEtGym"
+				"bzz-raw://3cbe5a6c3f8c026b73d018636a9b20f0e481f08d2daa350e78bcc2b69de4ec27",
+				"dweb:/ipfs/QmQZ51xKuk29UWdvywDQM7wDk1qFSV2rUny119RYfs4XMU"
 			]
 		}
 	},
