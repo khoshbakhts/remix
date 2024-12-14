@@ -82,33 +82,6 @@
 							"type": "string"
 						},
 						{
-							"components": [
-								{
-									"internalType": "string",
-									"name": "city",
-									"type": "string"
-								},
-								{
-									"internalType": "string",
-									"name": "country",
-									"type": "string"
-								},
-								{
-									"internalType": "int256",
-									"name": "longitude",
-									"type": "int256"
-								},
-								{
-									"internalType": "int256",
-									"name": "latitude",
-									"type": "int256"
-								}
-							],
-							"internalType": "struct IGallery.Location",
-							"name": "location",
-							"type": "tuple"
-						},
-						{
 							"internalType": "address",
 							"name": "owner",
 							"type": "address"

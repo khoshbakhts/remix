@@ -382,45 +382,6 @@
 						"type": "uint256"
 					}
 				],
-				"name": "debugPaintingRequest",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "isWallPainted",
-						"type": "bool"
-					},
-					{
-						"internalType": "enum PaintingNFT.PaintingStatus",
-						"name": "currentStatus",
-						"type": "uint8"
-					},
-					{
-						"internalType": "bool",
-						"name": "isInGallery",
-						"type": "bool"
-					},
-					{
-						"internalType": "uint256",
-						"name": "galleryId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "hasPainterRole",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "wallId",
-						"type": "uint256"
-					}
-				],
 				"name": "finalizePainting",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -453,40 +414,6 @@
 						"internalType": "address",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "wallId",
-						"type": "uint256"
-					}
-				],
-				"name": "getGalleryDebugInfo",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "isInGallery",
-						"type": "bool"
-					},
-					{
-						"internalType": "uint256",
-						"name": "galleryId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "galleryOwner",
-						"type": "address"
-					},
-					{
-						"internalType": "bool",
-						"name": "isActive",
-						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -543,6 +470,44 @@
 						"internalType": "address",
 						"name": "",
 						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "painter",
+						"type": "address"
+					}
+				],
+				"name": "painterAcceptedRequests",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "painter",
+						"type": "address"
+					}
+				],
+				"name": "painterPendingRequests",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "wallIds",
+						"type": "uint256[]"
 					}
 				],
 				"stateMutability": "view",
@@ -902,6 +867,38 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "wallId",
+						"type": "uint256"
+					}
+				],
+				"name": "wallPaintingPendingRequests",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "requestIds",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "wallPaintingPendingSubmits",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -1189,11 +1186,11 @@
 			]
 		},
 		"Wallery/Painting.sol": {
-			"keccak256": "0x55b5a82c04ffacbb975aa289302d6315305ca4623df2b342a0ff94bee3f3b602",
+			"keccak256": "0xb4fb235b396c9f71139939eb57cc26f417e91e4abd6df8dfd2aa1d3e6b1180ee",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://703cbf75012973833928627110439d8e699d758053abe933f8800410fe0984b7",
-				"dweb:/ipfs/QmQfN8bhPQiGjjT4cxWzFjgtZWvS1Svs7naEhVaYqtk95i"
+				"bzz-raw://81d1b233a7a00de0030df2b5b3613504a6fb6b8614eaf2164dde36bb7a5e8021",
+				"dweb:/ipfs/QmcNW8MKoCvVjoiNzNcMabdHtuqEbaqJujbRFUzkosJ7ms"
 			]
 		}
 	},

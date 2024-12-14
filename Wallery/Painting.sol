@@ -6,15 +6,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 interface IRoleManager {
-    function hasRole(bytes32 role, address account)
-        external
-        view
-        returns (bool);
-
+    function hasRole(bytes32 role, address account) external view returns (bool);
     function ADMIN_ROLE() external view returns (bytes32);
-
     function PAINTER_ROLE() external view returns (bytes32);
-
     function GALLERY_OWNER_ROLE() external view returns (bytes32);
 }
 
@@ -42,20 +36,11 @@ interface IWall {
     function getWall(uint256 wallId) external view returns (WallData memory);
 }
 
-
 interface IGallery {
-    struct Location {
-        string city;
-        string country;
-        int256 longitude;
-        int256 latitude;
-    }
-
     struct GalleryData {
         uint256 id;
         string name;
         string description;
-        Location location;
         address owner;
         uint256 ownershipPercentage;
         bool isActive;
@@ -90,12 +75,7 @@ contract PaintingNFT is ERC721, Pausable {
 
     Counters.Counter private _paintingIds;
 
-    enum PaintingStatus {
-        None,
-        Requested,
-        InProcess,
-        Completed
-    }
+    enum PaintingStatus { None, Requested, InProcess, Completed }
 
     struct PaintingRequest {
         uint256 wallId;
@@ -114,21 +94,15 @@ contract PaintingNFT is ERC721, Pausable {
         uint256 createdAt;
     }
 
-    // Storage
     mapping(uint256 => PaintingData) public paintings;
     mapping(uint256 => PaintingRequest) public paintingRequests;
     mapping(uint256 => bool) public wallPainted;
+    mapping(address => uint256[]) private painterToRequests;
+    mapping(uint256 => uint256[]) private wallToRequests;
 
-    // Events
     event PaintingRequested(uint256 indexed wallId, address indexed painter);
-    event PaintingRequestApproved(
-        uint256 indexed wallId,
-        address indexed painter
-    );
-    event PaintingRequestRejected(
-        uint256 indexed wallId,
-        address indexed painter
-    );
+    event PaintingRequestApproved(uint256 indexed wallId, address indexed painter);
+    event PaintingRequestRejected(uint256 indexed wallId, address indexed painter);
     event PaintingCompleted(uint256 indexed paintingId, uint256 indexed wallId);
     event SharesCreated(uint256 indexed paintingId);
 
@@ -140,14 +114,8 @@ contract PaintingNFT is ERC721, Pausable {
     ) ERC721("Wall Painting", "WPAINT") {
         require(_roleManager != address(0), "Invalid RoleManager address");
         require(_wallContract != address(0), "Invalid Wall contract address");
-        require(
-            _galleryContract != address(0),
-            "Invalid Gallery contract address"
-        );
-        require(
-            _paintingShares != address(0),
-            "Invalid Shares contract address"
-        );
+        require(_galleryContract != address(0), "Invalid Gallery contract address");
+        require(_paintingShares != address(0), "Invalid Shares contract address");
 
         roleManager = IRoleManager(_roleManager);
         wallContract = IWall(_wallContract);
@@ -156,95 +124,44 @@ contract PaintingNFT is ERC721, Pausable {
     }
 
     modifier onlyPainter() {
-        require(
-            roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender),
-            "Must have PAINTER_ROLE"
-        );
+        require(roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender), "Must have PAINTER_ROLE");
         _;
     }
 
-modifier onlyGalleryOwner(uint256 wallId) {
-    IWall.WallData memory wallData = wallContract.getWall(wallId);
-    require(wallData.isInGallery, "Wall not in gallery");
-    
-    // Get gallery data directly
-    IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-    require(gallery.isActive, "Gallery not active");
-    require(msg.sender == gallery.owner, "Not gallery owner");
-    _;
-}
-
-
-function getGalleryDebugInfo(uint256 wallId) external view returns (
-    bool isInGallery,
-    uint256 galleryId,
-    address galleryOwner,
-    bool isActive
-) {
-    // Get wall data
-    IWall.WallData memory wallData = wallContract.getWall(wallId);
-    
-    if (wallData.isInGallery) {
+    modifier onlyGalleryOwner(uint256 wallId) {
+        IWall.WallData memory wallData = wallContract.getWall(wallId);
+        require(wallData.isInGallery, "Wall not in gallery");
         IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-        return (wallData.isInGallery, wallData.galleryId, gallery.owner, gallery.isActive);
+        require(gallery.isActive, "Gallery not active");
+        require(msg.sender == gallery.owner, "Not gallery owner");
+        _;
     }
-    
-    return (wallData.isInGallery, wallData.galleryId, address(0), false);
-}
 
-function requestPainting(
-    uint256 wallId, 
-    string calldata description
-) external onlyPainter whenNotPaused {
-    // Add detailed checks with specific error messages
-    require(bytes(description).length > 0, "Description cannot be empty");
-    require(!wallPainted[wallId], "Wall already painted");
-    
-    // Check if there's an existing request
-    require(paintingRequests[wallId].status == PaintingStatus.None, 
-            "Request already exists for this wall");
+    function requestPainting(uint256 wallId, string calldata description) 
+        external 
+        onlyPainter 
+        whenNotPaused 
+    {
+        require(bytes(description).length > 0, "Description cannot be empty");
+        require(!wallPainted[wallId], "Wall already painted");
+        require(paintingRequests[wallId].status == PaintingStatus.None, "Request exists");
+        
+        IWall.WallData memory wallData = wallContract.getWall(wallId);
+        require(wallData.isInGallery, "Wall not in gallery");
+        
+        paintingRequests[wallId] = PaintingRequest({
+            wallId: wallId,
+            painter: msg.sender,
+            description: description,
+            status: PaintingStatus.Requested,
+            timestamp: block.timestamp
+        });
 
-    // Get wall data with detailed error handling
-    IWall.WallData memory wallData = wallContract.getWall(wallId);
-    
-    // Verify wall exists
-    require(wallData.id == wallId, "Wall does not exist");
-    
-    // Check if wall is in gallery
-    require(wallData.isInGallery, "Wall not in gallery");
-    
-    // Create the request with explicit status
-    paintingRequests[wallId] = PaintingRequest({
-        wallId: wallId,
-        painter: msg.sender,
-        description: description,
-        status: PaintingStatus.Requested,
-        timestamp: block.timestamp
-    });
+        painterToRequests[msg.sender].push(wallId);
+        wallToRequests[wallId].push(wallId);
 
-    emit PaintingRequested(wallId, msg.sender);
-}
-
-// Add a debug function to help identify issues
-function debugPaintingRequest(uint256 wallId) external view returns (
-    bool isWallPainted,
-    PaintingStatus currentStatus,
-    bool isInGallery,
-    uint256 galleryId,
-    bool hasPainterRole
-) {
-    // Get wall data properly using the struct
-    IWall.WallData memory wallData = wallContract.getWall(wallId);
-    
-    return (
-        wallPainted[wallId],
-        paintingRequests[wallId].status,
-        wallData.isInGallery,
-        wallData.galleryId,
-        roleManager.hasRole(roleManager.PAINTER_ROLE(), msg.sender)
-    );
-}
-
+        emit PaintingRequested(wallId, msg.sender);
+    }
 
     function approvePaintingRequest(uint256 wallId) 
         external 
@@ -252,12 +169,15 @@ function debugPaintingRequest(uint256 wallId) external view returns (
         whenNotPaused 
     {
         PaintingRequest storage request = paintingRequests[wallId];
-        require(request.status == PaintingStatus.Requested, "Invalid request status");
+        require(request.status == PaintingStatus.Requested, "Invalid status");
         
         request.status = PaintingStatus.InProcess;
+        
+        _removeFromArray(painterToRequests[request.painter], wallId);
+        _removeFromArray(wallToRequests[wallId], wallId);
+        
         emit PaintingRequestApproved(wallId, request.painter);
     }
-
 
     function rejectPaintingRequest(uint256 wallId)
         external
@@ -265,12 +185,13 @@ function debugPaintingRequest(uint256 wallId) external view returns (
         whenNotPaused
     {
         PaintingRequest storage request = paintingRequests[wallId];
-        require(
-            request.status == PaintingStatus.Requested,
-            "Invalid request status"
-        );
+        require(request.status == PaintingStatus.Requested, "Invalid status");
 
         request.status = PaintingStatus.None;
+        
+        _removeFromArray(painterToRequests[request.painter], wallId);
+        _removeFromArray(wallToRequests[wallId], wallId);
+        
         emit PaintingRequestRejected(wallId, request.painter);
     }
 
@@ -280,7 +201,7 @@ function debugPaintingRequest(uint256 wallId) external view returns (
         whenNotPaused
     {
         PaintingRequest storage request = paintingRequests[wallId];
-        require(request.painter == msg.sender, "Not the assigned painter");
+        require(request.painter == msg.sender, "Not assigned painter");
         require(request.status == PaintingStatus.InProcess, "Not in process");
 
         request.status = PaintingStatus.Completed;
@@ -292,18 +213,13 @@ function debugPaintingRequest(uint256 wallId) external view returns (
         whenNotPaused
     {
         PaintingRequest storage request = paintingRequests[wallId];
-        require(
-            request.status == PaintingStatus.Completed,
-            "Painting not completed"
-        );
+        require(request.status == PaintingStatus.Completed, "Not completed");
 
         _paintingIds.increment();
         uint256 newPaintingId = _paintingIds.current();
 
-        // Create painting NFT
         _safeMint(request.painter, newPaintingId);
 
-        // Store painting data
         paintings[newPaintingId] = PaintingData({
             id: newPaintingId,
             wallId: wallId,
@@ -314,59 +230,131 @@ function debugPaintingRequest(uint256 wallId) external view returns (
         });
 
         wallPainted[wallId] = true;
-
-        // Get ownership percentages and create shares
         _createShares(newPaintingId, wallId, request.painter);
 
         emit PaintingCompleted(newPaintingId, wallId);
     }
 
-function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
-    require(!paintings[paintingId].sharesMinted, "Shares already minted");
+    // Query functions
+    function painterPendingRequests(address painter) 
+        external 
+        view 
+        returns (uint256[] memory wallIds) 
+    {
+        return painterToRequests[painter];
+    }
 
-    // Get wall data
-    IWall.WallData memory wallData = wallContract.getWall(wallId);
-    
-    // Get gallery data
-    IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-    
-    // Get platform percentage
-    uint256 platformPercentage = galleryContract.platformPercentage();
+    function wallPaintingPendingRequests(uint256 wallId) 
+        external 
+        view 
+        returns (uint256[] memory requestIds) 
+    {
+        return wallToRequests[wallId];
+    }
 
-    require(platformPercentage + wallData.ownershipPercentage + gallery.ownershipPercentage <= 100, 
-            "Total percentage exceeds 100%");
+    function painterAcceptedRequests(address painter) 
+        external 
+        view 
+        returns (uint256[] memory) 
+    {
+        uint256 count = 0;
+        uint256 current = _paintingIds.current();
+        
+        // Count InProcess requests
+        for (uint256 i = 1; i <= current; i++) {
+            if (paintingRequests[i].painter == painter && 
+                paintingRequests[i].status == PaintingStatus.InProcess) {
+                count++;
+            }
+        }
+        
+        uint256[] memory result = new uint256[](count);
+        uint256 index = 0;
+        
+        // Fill array
+        for (uint256 i = 1; i <= current; i++) {
+            if (paintingRequests[i].painter == painter && 
+                paintingRequests[i].status == PaintingStatus.InProcess) {
+                result[index] = i;
+                index++;
+            }
+        }
+        
+        return result;
+    }
 
-    // Create and distribute shares - platform admin is handled by PaintingShares
-    paintingShares.createSharesForPainting(
-        paintingId,
-        address(0),           // Platform admin will be replaced with owner in PaintingShares
-        wallData.owner,       // Wall owner
-        gallery.owner,        // Gallery owner
-        painter,             // Painter
-        platformPercentage,   // Platform percentage
-        wallData.ownershipPercentage,  // Wall owner percentage
-        gallery.ownershipPercentage    // Gallery owner percentage
-    );
+    function wallPaintingPendingSubmits() 
+        external 
+        view 
+        returns (uint256[] memory) 
+    {
+        uint256 count = 0;
+        uint256 current = _paintingIds.current();
+        
+        // Count Completed requests
+        for (uint256 i = 1; i <= current; i++) {
+            if (paintingRequests[i].status == PaintingStatus.Completed) {
+                count++;
+            }
+        }
+        
+        uint256[] memory result = new uint256[](count);
+        uint256 index = 0;
+        
+        // Fill array
+        for (uint256 i = 1; i <= current; i++) {
+            if (paintingRequests[i].status == PaintingStatus.Completed) {
+                result[index] = i;
+                index++;
+            }
+        }
+        
+        return result;
+    }
 
-    paintings[paintingId].sharesMinted = true;
-    emit SharesCreated(paintingId);
-}
+    // Helper Functions
+    function _removeFromArray(uint256[] storage arr, uint256 value) private {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (arr[i] == value) {
+                arr[i] = arr[arr.length - 1];
+                arr.pop();
+                break;
+            }
+        }
+    }
 
+    function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
+        require(!paintings[paintingId].sharesMinted, "Shares minted");
 
-    // Admin functions
-    function pause() external {
-        require(
-            roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
-            "Must have ADMIN_ROLE"
+        IWall.WallData memory wallData = wallContract.getWall(wallId);
+        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
+        uint256 platformPercentage = galleryContract.platformPercentage();
+
+        require(platformPercentage + wallData.ownershipPercentage + gallery.ownershipPercentage <= 100, 
+                "Exceeds 100%");
+
+        paintingShares.createSharesForPainting(
+            paintingId,
+            address(0),
+            wallData.owner,
+            gallery.owner,
+            painter,
+            platformPercentage,
+            wallData.ownershipPercentage,
+            gallery.ownershipPercentage
         );
+
+        paintings[paintingId].sharesMinted = true;
+        emit SharesCreated(paintingId);
+    }
+
+    function pause() external {
+        require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), "Must have ADMIN_ROLE");
         _pause();
     }
 
     function unpause() external {
-        require(
-            roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender),
-            "Must have ADMIN_ROLE"
-        );
+        require(roleManager.hasRole(roleManager.ADMIN_ROLE(), msg.sender), "Must have ADMIN_ROLE");
         _unpause();
     }
 }
