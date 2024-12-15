@@ -236,11 +236,11 @@
 			]
 		},
 		"Wallery/Painting.sol": {
-			"keccak256": "0xb4fb235b396c9f71139939eb57cc26f417e91e4abd6df8dfd2aa1d3e6b1180ee",
+			"keccak256": "0x9501ceeb01c930cdb0730b397b3094d376e1e39ed2e0e2437220547466a37b52",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://81d1b233a7a00de0030df2b5b3613504a6fb6b8614eaf2164dde36bb7a5e8021",
-				"dweb:/ipfs/QmcNW8MKoCvVjoiNzNcMabdHtuqEbaqJujbRFUzkosJ7ms"
+				"bzz-raw://69faa2a72bf07c4d9f00f18bf8652e50e5c35529d360d36f1e222341446cf349",
+				"dweb:/ipfs/QmbvPVYg8MzvuSN37mcww2mTLDGSntTcqfeZ4Qrf1vMvSx"
 			]
 		}
 	},

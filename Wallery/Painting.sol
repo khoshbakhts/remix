@@ -94,6 +94,13 @@ contract PaintingNFT is ERC721, Pausable {
         uint256 createdAt;
     }
 
+    // New mappings for better request tracking
+    mapping(address => uint256[]) private painterPendingRequestIds;
+    mapping(uint256 => uint256[]) private wallPendingRequestIds;
+    mapping(address => uint256[]) private painterAcceptedRequestIds;
+    mapping(uint256 => uint256[]) private wallCompletedRequestIds;
+
+
     mapping(uint256 => PaintingData) public paintings;
     mapping(uint256 => PaintingRequest) public paintingRequests;
     mapping(uint256 => bool) public wallPainted;
@@ -137,7 +144,7 @@ contract PaintingNFT is ERC721, Pausable {
         _;
     }
 
-    function requestPainting(uint256 wallId, string calldata description) 
+     function requestPainting(uint256 wallId, string calldata description) 
         external 
         onlyPainter 
         whenNotPaused 
@@ -157,8 +164,9 @@ contract PaintingNFT is ERC721, Pausable {
             timestamp: block.timestamp
         });
 
-        painterToRequests[msg.sender].push(wallId);
-        wallToRequests[wallId].push(wallId);
+        // Update tracking arrays
+        painterPendingRequestIds[msg.sender].push(wallId);
+        wallPendingRequestIds[wallId].push(wallId);
 
         emit PaintingRequested(wallId, msg.sender);
     }
@@ -173,8 +181,10 @@ contract PaintingNFT is ERC721, Pausable {
         
         request.status = PaintingStatus.InProcess;
         
-        _removeFromArray(painterToRequests[request.painter], wallId);
-        _removeFromArray(wallToRequests[wallId], wallId);
+        // Update tracking arrays
+        _removeFromArray(painterPendingRequestIds[request.painter], wallId);
+        _removeFromArray(wallPendingRequestIds[wallId], wallId);
+        painterAcceptedRequestIds[request.painter].push(wallId);
         
         emit PaintingRequestApproved(wallId, request.painter);
     }
@@ -189,8 +199,9 @@ contract PaintingNFT is ERC721, Pausable {
 
         request.status = PaintingStatus.None;
         
-        _removeFromArray(painterToRequests[request.painter], wallId);
-        _removeFromArray(wallToRequests[wallId], wallId);
+        // Update tracking arrays
+        _removeFromArray(painterPendingRequestIds[request.painter], wallId);
+        _removeFromArray(wallPendingRequestIds[wallId], wallId);
         
         emit PaintingRequestRejected(wallId, request.painter);
     }
@@ -205,6 +216,10 @@ contract PaintingNFT is ERC721, Pausable {
         require(request.status == PaintingStatus.InProcess, "Not in process");
 
         request.status = PaintingStatus.Completed;
+        
+        // Update tracking arrays
+        _removeFromArray(painterAcceptedRequestIds[msg.sender], wallId);
+        wallCompletedRequestIds[wallId].push(wallId);
     }
 
     function finalizePainting(uint256 wallId)
@@ -229,27 +244,30 @@ contract PaintingNFT is ERC721, Pausable {
             createdAt: block.timestamp
         });
 
+        // Update tracking arrays
+        _removeFromArray(wallCompletedRequestIds[wallId], wallId);
+        
         wallPainted[wallId] = true;
         _createShares(newPaintingId, wallId, request.painter);
 
         emit PaintingCompleted(newPaintingId, wallId);
     }
 
-    // Query functions
+    // Updated query functions
     function painterPendingRequests(address painter) 
         external 
         view 
-        returns (uint256[] memory wallIds) 
+        returns (uint256[] memory) 
     {
-        return painterToRequests[painter];
+        return painterPendingRequestIds[painter];
     }
 
     function wallPaintingPendingRequests(uint256 wallId) 
         external 
         view 
-        returns (uint256[] memory requestIds) 
+        returns (uint256[] memory) 
     {
-        return wallToRequests[wallId];
+        return wallPendingRequestIds[wallId];
     }
 
     function painterAcceptedRequests(address painter) 
@@ -257,59 +275,15 @@ contract PaintingNFT is ERC721, Pausable {
         view 
         returns (uint256[] memory) 
     {
-        uint256 count = 0;
-        uint256 current = _paintingIds.current();
-        
-        // Count InProcess requests
-        for (uint256 i = 1; i <= current; i++) {
-            if (paintingRequests[i].painter == painter && 
-                paintingRequests[i].status == PaintingStatus.InProcess) {
-                count++;
-            }
-        }
-        
-        uint256[] memory result = new uint256[](count);
-        uint256 index = 0;
-        
-        // Fill array
-        for (uint256 i = 1; i <= current; i++) {
-            if (paintingRequests[i].painter == painter && 
-                paintingRequests[i].status == PaintingStatus.InProcess) {
-                result[index] = i;
-                index++;
-            }
-        }
-        
-        return result;
+        return painterAcceptedRequestIds[painter];
     }
 
-    function wallPaintingPendingSubmits() 
+    function wallPaintingPendingSubmits(uint256 wallId) 
         external 
         view 
         returns (uint256[] memory) 
     {
-        uint256 count = 0;
-        uint256 current = _paintingIds.current();
-        
-        // Count Completed requests
-        for (uint256 i = 1; i <= current; i++) {
-            if (paintingRequests[i].status == PaintingStatus.Completed) {
-                count++;
-            }
-        }
-        
-        uint256[] memory result = new uint256[](count);
-        uint256 index = 0;
-        
-        // Fill array
-        for (uint256 i = 1; i <= current; i++) {
-            if (paintingRequests[i].status == PaintingStatus.Completed) {
-                result[index] = i;
-                index++;
-            }
-        }
-        
-        return result;
+        return wallCompletedRequestIds[wallId];
     }
 
     // Helper Functions
