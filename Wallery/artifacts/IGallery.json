@@ -49,8 +49,9 @@
 		},
 		"gasEstimates": null,
 		"methodIdentifiers": {
-			"getGallery(uint256)": "e3fbf314",
-			"platformPercentage()": "1f741897"
+			"getGalleryOwner(uint256)": "5288ce50",
+			"getPlatformPercentage()": "111c83fb",
+			"isGalleryActive(uint256)": "46e012fa"
 		}
 	},
 	"abi": [
@@ -62,54 +63,12 @@
 					"type": "uint256"
 				}
 			],
-			"name": "getGallery",
+			"name": "getGalleryOwner",
 			"outputs": [
 				{
-					"components": [
-						{
-							"internalType": "uint256",
-							"name": "id",
-							"type": "uint256"
-						},
-						{
-							"internalType": "string",
-							"name": "name",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "description",
-							"type": "string"
-						},
-						{
-							"internalType": "address",
-							"name": "owner",
-							"type": "address"
-						},
-						{
-							"internalType": "uint256",
-							"name": "ownershipPercentage",
-							"type": "uint256"
-						},
-						{
-							"internalType": "bool",
-							"name": "isActive",
-							"type": "bool"
-						},
-						{
-							"internalType": "uint256",
-							"name": "createdAt",
-							"type": "uint256"
-						},
-						{
-							"internalType": "uint256",
-							"name": "lastUpdated",
-							"type": "uint256"
-						}
-					],
-					"internalType": "struct IGallery.GalleryData",
+					"internalType": "address",
 					"name": "",
-					"type": "tuple"
+					"type": "address"
 				}
 			],
 			"stateMutability": "view",
@@ -117,12 +76,31 @@
 		},
 		{
 			"inputs": [],
-			"name": "platformPercentage",
+			"name": "getPlatformPercentage",
 			"outputs": [
 				{
 					"internalType": "uint256",
 					"name": "",
 					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "galleryId",
+					"type": "uint256"
+				}
+			],
+			"name": "isGalleryActive",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
 				}
 			],
 			"stateMutability": "view",

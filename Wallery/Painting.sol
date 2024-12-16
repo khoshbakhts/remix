@@ -37,19 +37,9 @@ interface IWall {
 }
 
 interface IGallery {
-    struct GalleryData {
-        uint256 id;
-        string name;
-        string description;
-        address owner;
-        uint256 ownershipPercentage;
-        bool isActive;
-        uint256 createdAt;
-        uint256 lastUpdated;
-    }
-
-    function getGallery(uint256 galleryId) external view returns (GalleryData memory);
-    function platformPercentage() external view returns (uint256);
+    function getPlatformPercentage() external view returns (uint256);
+    function isGalleryActive(uint256 galleryId) external view returns (bool);
+    function getGalleryOwner(uint256 galleryId) external view returns (address);
 }
 
 interface IPaintingShares {
@@ -96,12 +86,11 @@ contract PaintingNFT is ERC721, Pausable {
         uint256 createdAt;
     }
 
-    // Updated mappings for request tracking
-    mapping(uint256 => PaintingRequest) public paintingRequests; // requestId => PaintingRequest
-    mapping(uint256 => uint256[]) public wallToRequestIds; // wallId => requestId[]
-    mapping(address => uint256[]) private painterPendingRequestIds; // painter => requestId[]
-    mapping(address => uint256[]) private painterAcceptedRequestIds; // painter => requestId[]
-    mapping(uint256 => uint256[]) private wallCompletedRequestIds; // wallId => requestId[]
+    mapping(uint256 => PaintingRequest) public paintingRequests;
+    mapping(uint256 => uint256[]) public wallToRequestIds;
+    mapping(address => uint256[]) private painterPendingRequestIds;
+    mapping(address => uint256[]) private painterAcceptedRequestIds;
+    mapping(uint256 => uint256[]) private wallCompletedRequestIds;
     mapping(uint256 => PaintingData) public paintings;
     mapping(uint256 => bool) public wallPainted;
 
@@ -133,13 +122,13 @@ contract PaintingNFT is ERC721, Pausable {
         _;
     }
 
-    modifier onlyGalleryOwner(uint256 wallId) {
+    function validateGalleryOwner(uint256 wallId, address owner) public view returns (bool) {
         IWall.WallData memory wallData = wallContract.getWall(wallId);
-        require(wallData.isInGallery, "Wall not in gallery");
-        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-        require(gallery.isActive, "Gallery not active");
-        require(msg.sender == gallery.owner, "Not gallery owner");
-        _;
+        if (!wallData.isInGallery) {
+            return false;
+        }
+        return galleryContract.isGalleryActive(wallData.galleryId) && 
+               galleryContract.getGalleryOwner(wallData.galleryId) == owner;
     }
 
     function requestPainting(uint256 wallId, string calldata description) 
@@ -165,7 +154,6 @@ contract PaintingNFT is ERC721, Pausable {
             timestamp: block.timestamp
         });
 
-        // Update tracking arrays
         wallToRequestIds[wallId].push(newRequestId);
         painterPendingRequestIds[msg.sender].push(newRequestId);
 
@@ -179,57 +167,19 @@ contract PaintingNFT is ERC721, Pausable {
         PaintingRequest storage request = paintingRequests[requestId];
         require(request.requestId == requestId, "Request does not exist");
         require(request.status == PaintingStatus.Requested, "Invalid status");
+        require(validateGalleryOwner(request.wallId, msg.sender), "Not authorized gallery owner");
+        require(!wallPainted[request.wallId], "Wall already painted");
+        require(request.painter != address(0), "Invalid painter address");
         
-        // Check gallery owner permission
         IWall.WallData memory wallData = wallContract.getWall(request.wallId);
         require(wallData.isInGallery, "Wall not in gallery");
-        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-        require(gallery.isActive, "Gallery not active");
-        require(msg.sender == gallery.owner, "Not gallery owner");
-        
-        // Reject all other pending requests for this wall
-        uint256[] memory wallRequests = wallToRequestIds[request.wallId];
-        for (uint256 i = 0; i < wallRequests.length; i++) {
-            if (wallRequests[i] != requestId && paintingRequests[wallRequests[i]].status == PaintingStatus.Requested) {
-                _rejectRequest(wallRequests[i]);
-            }
-        }
         
         request.status = PaintingStatus.InProcess;
         
-        // Update tracking arrays
         _removeFromArray(painterPendingRequestIds[request.painter], requestId);
         painterAcceptedRequestIds[request.painter].push(requestId);
         
         emit PaintingRequestApproved(requestId, request.wallId, request.painter);
-    }
-
-    function rejectPaintingRequest(uint256 requestId)
-        external
-        whenNotPaused
-    {
-        PaintingRequest storage request = paintingRequests[requestId];
-        require(request.requestId == requestId, "Request does not exist");
-        require(request.status == PaintingStatus.Requested, "Invalid status");
-        
-        // Check gallery owner permission
-        IWall.WallData memory wallData = wallContract.getWall(request.wallId);
-        require(wallData.isInGallery, "Wall not in gallery");
-        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-        require(gallery.isActive, "Gallery not active");
-        require(msg.sender == gallery.owner, "Not gallery owner");
-        
-        _rejectRequest(requestId);
-    }
-
-    function _rejectRequest(uint256 requestId) private {
-        PaintingRequest storage request = paintingRequests[requestId];
-        request.status = PaintingStatus.None;
-        
-        // Update tracking arrays
-        _removeFromArray(painterPendingRequestIds[request.painter], requestId);
-        
-        emit PaintingRequestRejected(requestId, request.wallId, request.painter);
     }
 
     function submitPaintingCompletion(uint256 requestId)
@@ -244,7 +194,6 @@ contract PaintingNFT is ERC721, Pausable {
 
         request.status = PaintingStatus.Completed;
         
-        // Update tracking arrays
         _removeFromArray(painterAcceptedRequestIds[msg.sender], requestId);
         wallCompletedRequestIds[request.wallId].push(requestId);
     }
@@ -256,13 +205,7 @@ contract PaintingNFT is ERC721, Pausable {
         PaintingRequest storage request = paintingRequests[requestId];
         require(request.requestId == requestId, "Request does not exist");
         require(request.status == PaintingStatus.Completed, "Not completed");
-        
-        // Check gallery owner permission
-        IWall.WallData memory wallData = wallContract.getWall(request.wallId);
-        require(wallData.isInGallery, "Wall not in gallery");
-        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-        require(gallery.isActive, "Gallery not active");
-        require(msg.sender == gallery.owner, "Not gallery owner");
+        require(validateGalleryOwner(request.wallId, msg.sender), "Not authorized gallery owner");
 
         _paintingIds.increment();
         uint256 newPaintingId = _paintingIds.current();
@@ -278,13 +221,44 @@ contract PaintingNFT is ERC721, Pausable {
             createdAt: block.timestamp
         });
 
-        // Update tracking arrays
         _removeFromArray(wallCompletedRequestIds[request.wallId], requestId);
         
         wallPainted[request.wallId] = true;
         _createShares(newPaintingId, request.wallId, request.painter);
 
         emit PaintingCompleted(newPaintingId, request.wallId);
+    }
+
+    function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
+        require(!paintings[paintingId].sharesMinted, "Shares minted");
+
+        IWall.WallData memory wallData = wallContract.getWall(wallId);
+        address galleryOwner = galleryContract.getGalleryOwner(wallData.galleryId);
+        uint256 platformPercentage = galleryContract.getPlatformPercentage();
+
+        paintingShares.createSharesForPainting(
+            paintingId,
+            address(0),
+            wallData.owner,
+            galleryOwner,
+            painter,
+            platformPercentage,
+            wallData.ownershipPercentage,
+            100 - platformPercentage - wallData.ownershipPercentage // Gallery owner gets remaining percentage
+        );
+
+        paintings[paintingId].sharesMinted = true;
+        emit SharesCreated(paintingId);
+    }
+
+    function _removeFromArray(uint256[] storage arr, uint256 value) private {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (arr[i] == value) {
+                arr[i] = arr[arr.length - 1];
+                arr.pop();
+                break;
+            }
+        }
     }
 
     // Query functions
@@ -318,42 +292,6 @@ contract PaintingNFT is ERC721, Pausable {
         returns (uint256[] memory) 
     {
         return wallCompletedRequestIds[wallId];
-    }
-
-    // Helper Functions
-    function _removeFromArray(uint256[] storage arr, uint256 value) private {
-        for (uint256 i = 0; i < arr.length; i++) {
-            if (arr[i] == value) {
-                arr[i] = arr[arr.length - 1];
-                arr.pop();
-                break;
-            }
-        }
-    }
-
-    function _createShares(uint256 paintingId, uint256 wallId, address painter) private {
-        require(!paintings[paintingId].sharesMinted, "Shares minted");
-
-        IWall.WallData memory wallData = wallContract.getWall(wallId);
-        IGallery.GalleryData memory gallery = galleryContract.getGallery(wallData.galleryId);
-        uint256 platformPercentage = galleryContract.platformPercentage();
-
-        require(platformPercentage + wallData.ownershipPercentage + gallery.ownershipPercentage <= 100, 
-                "Exceeds 100%");
-
-        paintingShares.createSharesForPainting(
-            paintingId,
-            address(0),
-            wallData.owner,
-            gallery.owner,
-            painter,
-            platformPercentage,
-            wallData.ownershipPercentage,
-            gallery.ownershipPercentage
-        );
-
-        paintings[paintingId].sharesMinted = true;
-        emit SharesCreated(paintingId);
     }
 
     function pause() external {

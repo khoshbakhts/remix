@@ -337,10 +337,6 @@ contract Gallery is Pausable {
         return galleries[galleryId].owner != address(0);
     }
 
-    function isGalleryActive(uint256 galleryId) external view returns (bool) {
-        return galleries[galleryId].isActive;
-    }
-
     function getGalleryWalls(uint256 galleryId) external view returns (uint256[] memory) {
         require(galleries[galleryId].isActive, "Gallery not active");
         return galleryWalls[galleryId];
@@ -366,4 +362,19 @@ contract Gallery is Pausable {
     function unpause() external onlyAdmin {
         _unpause();
     }
+
+
+// Add these functions to the Gallery contract
+function getPlatformPercentage() external view returns (uint256) {
+    return platformPercentage;
+}
+
+function isGalleryActive(uint256 galleryId) external view returns (bool) {
+    return galleries[galleryId].isActive;
+}
+
+function getGalleryOwner(uint256 galleryId) external view returns (address) {
+    return galleries[galleryId].owner;
+}
+
 }

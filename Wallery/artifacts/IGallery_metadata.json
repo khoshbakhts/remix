@@ -13,54 +13,12 @@
 						"type": "uint256"
 					}
 				],
-				"name": "getGallery",
+				"name": "getGalleryOwner",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "id",
-								"type": "uint256"
-							},
-							{
-								"internalType": "string",
-								"name": "name",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "description",
-								"type": "string"
-							},
-							{
-								"internalType": "address",
-								"name": "owner",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "ownershipPercentage",
-								"type": "uint256"
-							},
-							{
-								"internalType": "bool",
-								"name": "isActive",
-								"type": "bool"
-							},
-							{
-								"internalType": "uint256",
-								"name": "createdAt",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "lastUpdated",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct IGallery.GalleryData",
+						"internalType": "address",
 						"name": "",
-						"type": "tuple"
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -68,12 +26,31 @@
 			},
 			{
 				"inputs": [],
-				"name": "platformPercentage",
+				"name": "getPlatformPercentage",
 				"outputs": [
 					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
+					}
+				],
+				"name": "isGalleryActive",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -236,11 +213,11 @@
 			]
 		},
 		"Wallery/Painting.sol": {
-			"keccak256": "0xea3b6d342fd15f4bf579dfbc5e901b13fa7270bc509316623236ff6aadda6ffa",
+			"keccak256": "0xb44d0cdb5f8833aa8e53c11be5d6896cbcdcf543ad90eed9ed39b39d64ab2421",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b1020ae4da36b984b56e335af41297e04f0e78042aa0b7b2962c04378ccb47c5",
-				"dweb:/ipfs/QmWsRVtzxVAeo8rhGXEZsPKsQN89chhguN8DQpBSgeTvik"
+				"bzz-raw://3d16434365b4bc40f6d4c82dfabd4599eea1a18e6c799054484a6289c4979b78",
+				"dweb:/ipfs/QmXbLeMNwLT1FwnD9KJC5YyHWmFiooRdDKLR5Sycg4YT4y"
 			]
 		}
 	},

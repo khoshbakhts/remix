@@ -597,6 +597,25 @@
 						"type": "uint256"
 					}
 				],
+				"name": "getGalleryOwner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "galleryId",
+						"type": "uint256"
+					}
+				],
 				"name": "getGalleryWalls",
 				"outputs": [
 					{
@@ -649,6 +668,19 @@
 						"internalType": "struct Gallery.WallToGalleryRequest[]",
 						"name": "",
 						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getPlatformPercentage",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -1002,11 +1034,11 @@
 			]
 		},
 		"Wallery/Gallery.sol": {
-			"keccak256": "0xa82e1cf10ad5a74fb52eb33b58de23e7c31332f0c69cfdd4913f8397eba4a552",
+			"keccak256": "0xf07046153bf27870c00a165fd07a05fd17e7530c5af10cd4abe7ce2f246496d1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3cbe5a6c3f8c026b73d018636a9b20f0e481f08d2daa350e78bcc2b69de4ec27",
-				"dweb:/ipfs/QmQZ51xKuk29UWdvywDQM7wDk1qFSV2rUny119RYfs4XMU"
+				"bzz-raw://b6605805897ac61e1ac8e91f5ddccbf2ea1e2ca3814c41016a75eeacae8a31c8",
+				"dweb:/ipfs/QmPkVT5MW99THvsrpDWMEv9oVWyqXQ5ydXo2x3cNpgu1RG"
 			]
 		}
 	},

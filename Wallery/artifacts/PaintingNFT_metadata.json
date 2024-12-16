@@ -694,19 +694,6 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "requestId",
-						"type": "uint256"
-					}
-				],
-				"name": "rejectPaintingRequest",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
 						"name": "wallId",
 						"type": "uint256"
 					},
@@ -895,6 +882,30 @@
 				"name": "unpause",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "wallId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "validateGalleryOwner",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -1239,11 +1250,11 @@
 			]
 		},
 		"Wallery/Painting.sol": {
-			"keccak256": "0xea3b6d342fd15f4bf579dfbc5e901b13fa7270bc509316623236ff6aadda6ffa",
+			"keccak256": "0xb44d0cdb5f8833aa8e53c11be5d6896cbcdcf543ad90eed9ed39b39d64ab2421",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b1020ae4da36b984b56e335af41297e04f0e78042aa0b7b2962c04378ccb47c5",
-				"dweb:/ipfs/QmWsRVtzxVAeo8rhGXEZsPKsQN89chhguN8DQpBSgeTvik"
+				"bzz-raw://3d16434365b4bc40f6d4c82dfabd4599eea1a18e6c799054484a6289c4979b78",
+				"dweb:/ipfs/QmXbLeMNwLT1FwnD9KJC5YyHWmFiooRdDKLR5Sycg4YT4y"
 			]
 		}
 	},

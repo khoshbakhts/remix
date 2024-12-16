@@ -49,7 +49,8 @@
 		},
 		"gasEstimates": null,
 		"methodIdentifiers": {
-			"getWall(uint256)": "ff91e489"
+			"getWall(uint256)": "ff91e489",
+			"setGalleryStatus(uint256,uint256,bool)": "ce290e1d"
 		}
 	},
 	"abi": [
@@ -144,6 +145,29 @@
 				}
 			],
 			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "wallId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "galleryId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bool",
+					"name": "inGallery",
+					"type": "bool"
+				}
+			],
+			"name": "setGalleryStatus",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		}
 	]
