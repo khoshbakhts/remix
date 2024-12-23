@@ -50,7 +50,6 @@
 		"gasEstimates": null,
 		"methodIdentifiers": {
 			"ADMIN_ROLE()": "75b238fc",
-			"GALLERY_OWNER_ROLE()": "78988ebd",
 			"WALL_OWNER_ROLE()": "98e4abb5",
 			"hasRole(bytes32,address)": "91d14854"
 		}
@@ -59,19 +58,6 @@
 		{
 			"inputs": [],
 			"name": "ADMIN_ROLE",
-			"outputs": [
-				{
-					"internalType": "bytes32",
-					"name": "",
-					"type": "bytes32"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"name": "GALLERY_OWNER_ROLE",
 			"outputs": [
 				{
 					"internalType": "bytes32",
