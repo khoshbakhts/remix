@@ -250,11 +250,11 @@
 			]
 		},
 		"Signs 2/SignsNFT.sol": {
-			"keccak256": "0x7818eb45f49869f3fff406f9aa6c365a37d2b09c4c8d4eb865a6924b1c071c99",
+			"keccak256": "0x929a45ecbbae9525964decc1e9022355da4c52d9305157701a6280247ccff08f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://733e36fd0943cf85f9503b91c858d8e8db7894867682763087d0dcb0f637d3eb",
-				"dweb:/ipfs/QmUSz1c4WJNJWSVZ7JW6qzAYp4GczWq5BBQVxZnPfgNK7W"
+				"bzz-raw://7a0714f4706d105021aaad74a315abe1bcfcc449ce48967a0012a70e76444fe9",
+				"dweb:/ipfs/QmR2dx6HYg5awzYuGZrjJH82duLVYmnZuKSaHbVk1TJtD8"
 			]
 		}
 	},

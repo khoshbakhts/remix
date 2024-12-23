@@ -120,17 +120,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "InvalidInitialization",
-				"type": "error"
-			},
-			{
-				"inputs": [],
 				"name": "InvalidLocation",
-				"type": "error"
-			},
-			{
-				"inputs": [],
-				"name": "NotInitializing",
 				"type": "error"
 			},
 			{
@@ -173,6 +163,11 @@
 			{
 				"inputs": [],
 				"name": "SignNotPickedUp",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "SignsHistoryNotSet",
 				"type": "error"
 			},
 			{
@@ -277,25 +272,12 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "newHome",
 						"type": "tuple"
 					}
 				],
 				"name": "HomeUpdated",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "uint64",
-						"name": "version",
-						"type": "uint64"
-					}
-				],
-				"name": "Initialized",
 				"type": "event"
 			},
 			{
@@ -364,7 +346,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "home",
 						"type": "tuple"
 					}
@@ -406,7 +388,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "location",
 						"type": "tuple"
 					}
@@ -448,7 +430,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "from",
 						"type": "tuple"
 					},
@@ -471,7 +453,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "to",
 						"type": "tuple"
 					}
@@ -513,7 +495,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "location",
 						"type": "tuple"
 					}
@@ -642,7 +624,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "homeLocation",
 						"type": "tuple"
 					}
@@ -683,7 +665,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "location",
 						"type": "tuple"
 					},
@@ -715,13 +697,6 @@
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "initialize",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -838,7 +813,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "location",
 						"type": "tuple"
 					}
@@ -846,6 +821,78 @@
 				"name": "pickupSign",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "carrier",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "int64",
+								"name": "latitude",
+								"type": "int64"
+							},
+							{
+								"internalType": "int64",
+								"name": "longitude",
+								"type": "int64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "timestamp",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct ISigns.Location",
+						"name": "fromLoc",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "int64",
+								"name": "latitude",
+								"type": "int64"
+							},
+							{
+								"internalType": "int64",
+								"name": "longitude",
+								"type": "int64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "timestamp",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct ISigns.Location",
+						"name": "toLoc",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint256",
+						"name": "wage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "contentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "recordMovement",
+				"outputs": [],
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -927,6 +974,19 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_signsHistory",
+						"type": "address"
+					}
+				],
+				"name": "setSignsHistory",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
@@ -971,7 +1031,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "home",
 						"type": "tuple"
 					},
@@ -993,7 +1053,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "current",
 						"type": "tuple"
 					},
@@ -1026,6 +1086,19 @@
 						"internalType": "bytes32",
 						"name": "contentHash",
 						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "signsHistory",
+				"outputs": [
+					{
+						"internalType": "contract ISigns",
+						"name": "",
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -1150,7 +1223,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsNFT.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "newHome",
 						"type": "tuple"
 					}
@@ -1249,16 +1322,6 @@
 						}
 					}
 				],
-				"InvalidInitialization()": [
-					{
-						"details": "The contract is already initialized."
-					}
-				],
-				"NotInitializing()": [
-					{
-						"details": "The contract is not initializing."
-					}
-				],
 				"OwnableInvalidOwner(address)": [
 					{
 						"details": "The owner is not a valid owner account. (eg. `address(0)`)"
@@ -1277,9 +1340,6 @@
 				"ApprovalForAll(address,address,bool)": {
 					"details": "Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets."
 				},
-				"Initialized(uint64)": {
-					"details": "Triggered when the contract has been initialized or reinitialized."
-				},
 				"Paused(address)": {
 					"details": "Emitted when the pause is triggered by `account`."
 				},
@@ -1297,9 +1357,6 @@
 				},
 				"balanceOf(address)": {
 					"details": "See {IERC721-balanceOf}."
-				},
-				"constructor": {
-					"custom:oz-upgrades-unsafe-allow": "constructor"
 				},
 				"getApproved(uint256)": {
 					"details": "See {IERC721-getApproved}."
@@ -1371,60 +1428,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol": {
-			"keccak256": "0xc163fcf9bb10138631a9ba5564df1fa25db9adff73bd9ee868a8ae1858fe093a",
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9706d43a0124053d9880f6e31a59f31bc0a6a3dc1acd66ce0a16e1111658c5f6",
-				"dweb:/ipfs/QmUFmfowzkRwGtDu36cXV9SPTBHJ3n7dG9xQiK5B28jTf2"
-			]
-		},
-		"@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
-			"keccak256": "0x631188737069917d2f909d29ce62c4d48611d326686ba6683e26b72a23bfac0b",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://7a61054ae84cd6c4d04c0c4450ba1d6de41e27e0a2c4f1bcdf58f796b401c609",
-				"dweb:/ipfs/QmUvtdp7X1mRVyC3CsHrtPbgoqWaXHp3S1ZR24tpAQYJWM"
-			]
-		},
-		"@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol": {
-			"keccak256": "0xad32f6821f860555f9530902a65b54203a4f5db2117f4384ae47a124958078db",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://6d362da7417bc7d7cc8623f3d3f8f04c3808d043ee6379568c63a63ec14a124e",
-				"dweb:/ipfs/QmYm3wDHUcfGh3MNiRqpWEBbSSYnDSyUsppDATy5DVsfui"
-			]
-		},
-		"@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol": {
-			"keccak256": "0xfd473ea8f70e13eaa6475c7e348885b8a32925252e3bc237e07c0e3fde0f10f5",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://ea9d17ae8f18568ab1aedf555ebc79906ba3eaaccfa78efbaed05bd3a9e1b6f2",
-				"dweb:/ipfs/QmUQDGwCVE72tExiyA9EuwBeaiu9a8DQin3DZxuX76umg4"
-			]
-		},
-		"@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
-			"keccak256": "0xdbef5f0c787055227243a7318ef74c8a5a1108ca3a07f2b3a00ef67769e1e397",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://08e39f23d5b4692f9a40803e53a8156b72b4c1f9902a88cd65ba964db103dab9",
-				"dweb:/ipfs/QmPKn6EYDgpga7KtpkA8wV2yJCYGMtc9K4LkJfhKX2RVSV"
-			]
-		},
-		"@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol": {
-			"keccak256": "0x798741e231b22b81e2dd2eddaaf8832dee4baf5cd8e2dbaa5c1dd12a1c053c4d",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://c41e8a7a906b8f362c8b760a44edadc61782008ea2ecf377ac5b5325bf6c3912",
-				"dweb:/ipfs/QmcXr19zuH3YLzD6RZNE6UTzvsKSckdxZQnagPoDGkCHu2"
-			]
-		},
-		"@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol": {
-			"keccak256": "0xc8ed8d2056934b7675b695dec032f2920c2f5c6cf33a17ca85650940675323ab",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://3c8ccc75d1cd792d192aa09e54dd49ea35fe85baa9fcd17486f29227d9f29b89",
-				"dweb:/ipfs/QmbboSbFUEiM9tdEgBwuTRb7bykFoJXZ7dsSr1PSREJXMr"
+				"bzz-raw://8ed324d3920bb545059d66ab97d43e43ee85fd3bd52e03e401f020afb0b120f6",
+				"dweb:/ipfs/QmfEckWLmZkDDcoWrkEvMWhms66xwTLff9DDhegYpvHo1a"
 			]
 		},
 		"@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
@@ -1433,6 +1442,22 @@
 			"urls": [
 				"bzz-raw://399594cd8bb0143bc9e55e0f1d071d0d8c850a394fb7a319d50edd55d9ed822b",
 				"dweb:/ipfs/QmbPZzgtT6LEm9CMqWfagQFwETbV1ztpECBB1DtQHrKiRz"
+			]
+		},
+		"@openzeppelin/contracts/security/Pausable.sol": {
+			"keccak256": "0x0849d93b16c9940beb286a7864ed02724b248b93e0d80ef6355af5ef15c64773",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4ddabb16009cd17eaca3143feadf450ac13e72919ebe2ca50e00f61cb78bc004",
+				"dweb:/ipfs/QmSPwPxX7d6TTWakN5jy5wsaGkS1y9TW8fuhGSraMkLk2B"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/ERC721.sol": {
+			"keccak256": "0x39ed367e54765186281efcfe83e47cf0ad62cc879f10e191360712507125f29a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2c5ae6d85bd48cca8d6d2fcec8c63efd86f56f8a5832577a47e403ce0e65cb09",
+				"dweb:/ipfs/QmUtcS8AbRSWhuc61puYet58os8FvSqm329ChoW8wwZXZk"
 			]
 		},
 		"@openzeppelin/contracts/token/ERC721/IERC721.sol": {
@@ -1467,6 +1492,22 @@
 				"dweb:/ipfs/QmWrgT8YJrQ9FfD1o3YYArwo57e7MGdpFKuM74qJ4qE34E"
 			]
 		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+			]
+		},
+		"@openzeppelin/contracts/utils/Counters.sol": {
+			"keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+				"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+			]
+		},
 		"@openzeppelin/contracts/utils/Panic.sol": {
 			"keccak256": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
 			"license": "MIT",
@@ -1481,6 +1522,14 @@
 			"urls": [
 				"bzz-raw://0564ddb19c6d870e27b789d8f985283d815267ad7224883c2d5243c8bacc7dc0",
 				"dweb:/ipfs/QmeC953H4sj88ZRFdJNFdmpf7J9SksP1wK4jyMHLo66z49"
+			]
+		},
+		"@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+			"keccak256": "0xddce8e17e3d3f9ed818b4f4c4478a8262aab8b11ed322f1bf5ed705bb4bd97fa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8084aa71a4cc7d2980972412a88fe4f114869faea3fefa5436431644eb5c0287",
+				"dweb:/ipfs/Qmbqfs5dRdPvHVKY8kTaeyc65NdqXRQwRK7h9s5UJEhD1p"
 			]
 		},
 		"@openzeppelin/contracts/utils/introspection/IERC165.sol": {
@@ -1515,12 +1564,20 @@
 				"dweb:/ipfs/QmVUSvooZKEdEdap619tcJjTLcAuH6QBdZqAzWwnAXZAWJ"
 			]
 		},
-		"Signs 2/SignsNFT.sol": {
-			"keccak256": "0xc03f65f82018aca63a7d25ac2cde8b39b485ac44b198ca9aa62dedad4d9ae208",
+		"Signs 2/ISigns.sol": {
+			"keccak256": "0x9c0bef879fb7feff9e671c7da1d5ee05635a3efd3828c3fa2c0ca8bf45c30fe3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e89e6a83dedad6d627c9a76e1a6fa0ae2e911cb2ba0f22e7125e4669b6a52c3b",
-				"dweb:/ipfs/QmUNrF7BbtoJ2HhJEnLWewnPyqmQBzN4iFQ8tFt7vhU5Vk"
+				"bzz-raw://14d373e0f2aa9296521a57c7eb51c1df0bf1a86b189b0c05bf4dc4254b7c0ad4",
+				"dweb:/ipfs/Qmcmh3KGqJ1efv8EQUf2h18saPd4PUvtAqcqnde2KsdETr"
+			]
+		},
+		"Signs 2/SignsNFT.sol": {
+			"keccak256": "0x76497040cb3695b37d7324a86e6543f528c986d1e9d3ec62c20af491c5e53197",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8fec1ffa5d55f6ca5380684c7866be4060ee59e03768a57f64acdbba9ec1e064",
+				"dweb:/ipfs/QmTsJedgtnDnbw7n3Ej9zUsQ4SaoJbijLQ9XdVYa6ggiiK"
 			]
 		}
 	},

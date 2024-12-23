@@ -1,20 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "./ISigns.sol";
 
-contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, PausableUpgradeable {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
-
-    struct Location {
-        int64 latitude;    // ~4 decimal places precision (-90 to +90)
-        int64 longitude;   // ~4 decimal places precision (-180 to +180)
-        uint64 timestamp;  // Good until year 2554
-    }
+contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
+    using Counters for Counters.Counter;
 
     struct Sign {
         Location home;
@@ -24,16 +18,18 @@ contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, Pausa
         uint256 weight;
         address owner;
         bool isPickedUp;
-        bytes32 contentHash;  // Hash of off-chain content (diary entries, photos)
+        bytes32 contentHash;
     }
 
-    CountersUpgradeable.Counter private _tokenIds;
+    Counters.Counter private _tokenIds;
     mapping(uint256 => Sign) public signs;
     mapping(address => uint256) public userSignCount;
     mapping(uint256 => address) public signCarriers;
     
     uint256 public constant MAX_SIGNS_PER_USER = 1;
     uint256 public constant MAX_PICKUP_RADIUS = 100; // meters
+    
+    ISigns public signsHistory;
 
     event SignCreated(uint256 indexed tokenId, address indexed owner, Location home);
     event SignMoved(uint256 indexed tokenId, address indexed carrier, Location from, Location to);
@@ -49,16 +45,23 @@ contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, Pausa
     error UnauthorizedCarrier();
     error OutsidePickupRadius();
     error InvalidLocation();
+    error SignsHistoryNotSet();
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
+    constructor() ERC721("Signs Game NFT", "SIGN") Ownable(msg.sender) {}
+
+    function setSignsHistory(address _signsHistory) external onlyOwner {
+        signsHistory = ISigns(_signsHistory);
     }
 
-    function initialize() public initializer {
-        __ERC721_init("Signs Game NFT", "SIGN");
-        __Ownable_init(msg.sender);
-        __Pausable_init();
+    function recordMovement(
+        uint256 tokenId,
+        address carrier,
+        Location calldata fromLoc,
+        Location calldata toLoc,
+        uint256 wage,
+        bytes32 contentHash
+    ) external pure override {
+        revert("SignsNFT: not implemented");
     }
 
     function createSign(Location calldata homeLocation) 
@@ -117,6 +120,8 @@ contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, Pausa
         external 
         whenNotPaused 
     {
+        if (address(signsHistory) == address(0)) revert SignsHistoryNotSet();
+        
         Sign storage sign = signs[tokenId];
         
         if (sign.owner == address(0)) revert SignNotFound();
@@ -130,6 +135,18 @@ contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, Pausa
         sign.totalMoves++;
         sign.totalCarriers++;
         sign.contentHash = contentHash;
+
+        uint256 wage = _calculateWage(oldLocation, location, sign.weight);
+
+        signsHistory.recordMovement(
+            tokenId,
+            msg.sender,
+            oldLocation,
+            location,
+            wage,
+            contentHash
+        );
+
         delete signCarriers[tokenId];
 
         emit SignDropped(tokenId, msg.sender, location);
@@ -158,16 +175,33 @@ contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, Pausa
         int64 latDiff = loc1.latitude - loc2.latitude;
         int64 lonDiff = loc1.longitude - loc2.longitude;
         
-        // Convert to positive values for calculation
         uint64 absLatDiff = latDiff < 0 ? uint64(-latDiff) : uint64(latDiff);
         uint64 absLonDiff = lonDiff < 0 ? uint64(-lonDiff) : uint64(lonDiff);
         
-        // Rough approximation: 1 degree ≈ 111km
         uint256 distanceM = uint256(absLatDiff) * uint256(absLatDiff) + 
                            uint256(absLonDiff) * uint256(absLonDiff);
         distanceM = distanceM * 111000 * 111000;
         
         return distanceM <= MAX_PICKUP_RADIUS;
+    }
+
+    function _calculateWage(
+        Location memory from,
+        Location memory to,
+        uint256 weight
+    ) internal pure returns (uint256) {
+        int64 latDiff = to.latitude - from.latitude;
+        int64 lonDiff = to.longitude - from.longitude;
+        
+        uint64 absLatDiff = latDiff < 0 ? uint64(-latDiff) : uint64(latDiff);
+        uint64 absLonDiff = lonDiff < 0 ? uint64(-lonDiff) : uint64(lonDiff);
+        
+        uint256 distance = uint256(absLatDiff) * uint256(absLatDiff) + 
+                          uint256(absLonDiff) * uint256(absLonDiff);
+        
+        uint256 baseWage = (distance * 111000) / 100;
+        uint256 weightPenalty = (baseWage * weight) / 10000;
+        return baseWage > weightPenalty ? baseWage - weightPenalty : 0;
     }
 
     function _isValidLocation(Location memory location) 
@@ -198,12 +232,12 @@ contract SignsNFT is Initializable, ERC721Upgradeable, OwnableUpgradeable, Pausa
         revert("Signs: approval for all not allowed");
     }
 
-    function _beforeTokenTransfer(
-        address from,
+    function _update(
         address to,
         uint256 tokenId,
-        uint256 batchSize
-    ) internal virtual whenNotPaused {
+        address auth
+    ) internal virtual override whenNotPaused returns (address) {
         require(!signs[tokenId].isPickedUp, "Sign is currently picked up");
+        return super._update(to, tokenId, auth);
     }
 }

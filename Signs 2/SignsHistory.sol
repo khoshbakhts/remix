@@ -3,21 +3,9 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "./ISigns.sol";
 
-contract SignsHistory is Ownable, Pausable {
-    struct Location {
-        int64 latitude;
-        int64 longitude;
-        uint64 timestamp;
-    }
-
-    struct MovementRecord {
-        Location fromLocation;
-        Location toLocation;
-        address carrier;
-        uint96 wage;
-    }
-
+contract SignsHistory is ISigns, Ownable, Pausable {
     uint256 public constant RECENT_MOVEMENTS_LIMIT = 10;
     mapping(uint256 => MovementRecord[]) public recentMovements;
     mapping(uint256 => bytes32) public signMovementRoots;
@@ -53,7 +41,7 @@ contract SignsHistory is Ownable, Pausable {
         Location calldata toLoc,
         uint256 wage,
         bytes32 contentHash
-    ) external whenNotPaused {
+    ) external override whenNotPaused {
         if (msg.sender != signsNFTContract) revert UnauthorizedCaller();
         if (!_validateMovement(fromLoc, toLoc)) revert InvalidMovement();
 

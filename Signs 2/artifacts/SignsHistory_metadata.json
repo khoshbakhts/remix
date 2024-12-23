@@ -143,7 +143,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsHistory.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "fromLocation",
 						"type": "tuple"
 					},
@@ -166,7 +166,7 @@
 							}
 						],
 						"indexed": false,
-						"internalType": "struct SignsHistory.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "toLocation",
 						"type": "tuple"
 					},
@@ -254,7 +254,7 @@
 										"type": "uint64"
 									}
 								],
-								"internalType": "struct SignsHistory.Location",
+								"internalType": "struct ISigns.Location",
 								"name": "fromLocation",
 								"type": "tuple"
 							},
@@ -276,7 +276,7 @@
 										"type": "uint64"
 									}
 								],
-								"internalType": "struct SignsHistory.Location",
+								"internalType": "struct ISigns.Location",
 								"name": "toLocation",
 								"type": "tuple"
 							},
@@ -291,7 +291,7 @@
 								"type": "uint96"
 							}
 						],
-						"internalType": "struct SignsHistory.MovementRecord[]",
+						"internalType": "struct ISigns.MovementRecord[]",
 						"name": "",
 						"type": "tuple[]"
 					}
@@ -365,7 +365,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsHistory.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "fromLocation",
 						"type": "tuple"
 					},
@@ -387,7 +387,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsHistory.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "toLocation",
 						"type": "tuple"
 					},
@@ -435,7 +435,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsHistory.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "fromLoc",
 						"type": "tuple"
 					},
@@ -457,7 +457,7 @@
 								"type": "uint64"
 							}
 						],
-						"internalType": "struct SignsHistory.Location",
+						"internalType": "struct ISigns.Location",
 						"name": "toLoc",
 						"type": "tuple"
 					},
@@ -700,12 +700,20 @@
 				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
 			]
 		},
-		"Signs 2/SignsHistory.sol": {
-			"keccak256": "0x48849a6ab13e148b8de6cebbda98176420b8cc81e09cba6326b05eeeb696d823",
+		"Signs 2/ISigns.sol": {
+			"keccak256": "0x9c0bef879fb7feff9e671c7da1d5ee05635a3efd3828c3fa2c0ca8bf45c30fe3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7c470ffb86cbcc2a2b19156242ea9bafe7cb1a1e89fccb0b607ce321538cd666",
-				"dweb:/ipfs/QmXVTXLTq95T6sJK4qUjhFYpKwGsvshESQk3VUt24rQb5j"
+				"bzz-raw://14d373e0f2aa9296521a57c7eb51c1df0bf1a86b189b0c05bf4dc4254b7c0ad4",
+				"dweb:/ipfs/Qmcmh3KGqJ1efv8EQUf2h18saPd4PUvtAqcqnde2KsdETr"
+			]
+		},
+		"Signs 2/SignsHistory.sol": {
+			"keccak256": "0x09be948c0bfab043acae6ec9161ccbe458666c8fa3145466d6e9b60327a03b7a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2e8e5f95f60b07edbd7afb71918a6fcb0c00dd467a96d2818e986814dc19598d",
+				"dweb:/ipfs/QmeEqQVipFpwnjLwpmLVdaVRst328rX5NfTaqnVM6AbEne"
 			]
 		}
 	},
