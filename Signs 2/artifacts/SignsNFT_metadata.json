@@ -125,6 +125,11 @@
 			},
 			{
 				"inputs": [],
+				"name": "InvalidWage",
+				"type": "error"
+			},
+			{
+				"inputs": [],
 				"name": "OutsidePickupRadius",
 				"type": "error"
 			},
@@ -176,6 +181,11 @@
 				"type": "error"
 			},
 			{
+				"inputs": [],
+				"name": "UnauthorizedOwner",
+				"type": "error"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -223,6 +233,19 @@
 					}
 				],
 				"name": "ApprovalForAll",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newRate",
+						"type": "uint256"
+					}
+				],
+				"name": "BaseWageRateUpdated",
 				"type": "event"
 			},
 			{
@@ -508,6 +531,25 @@
 				"inputs": [
 					{
 						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newWage",
+						"type": "uint256"
+					}
+				],
+				"name": "SignWageUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
 						"internalType": "address",
 						"name": "from",
 						"type": "address"
@@ -539,6 +581,31 @@
 					}
 				],
 				"name": "Unpaused",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newMoveWeightMultiplier",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newMoveWeightDivisor",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newDistanceWeightDivisor",
+						"type": "uint256"
+					}
+				],
+				"name": "WeightParametersUpdated",
 				"type": "event"
 			},
 			{
@@ -605,6 +672,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "baseWageRate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"components": [
@@ -638,6 +718,19 @@
 					}
 				],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "distanceWeightDivisor",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -718,6 +811,32 @@
 						"internalType": "bool",
 						"name": "",
 						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "moveWeightDivisor",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "moveWeightMultiplier",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -1064,7 +1183,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "totalCarriers",
+						"name": "totalDistanceMeters",
 						"type": "uint256"
 					},
 					{
@@ -1086,6 +1205,11 @@
 						"internalType": "bytes32",
 						"name": "contentHash",
 						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "signWage",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -1202,6 +1326,19 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "newRate",
+						"type": "uint256"
+					}
+				],
+				"name": "updateBaseWageRate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
 					},
@@ -1229,6 +1366,47 @@
 					}
 				],
 				"name": "updateHome",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "newWage",
+						"type": "uint256"
+					}
+				],
+				"name": "updateSignWage",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "newMoveWeightMultiplier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "newMoveWeightDivisor",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "newDistanceWeightDivisor",
+						"type": "uint256"
+					}
+				],
+				"name": "updateWeightParameters",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -1573,11 +1751,11 @@
 			]
 		},
 		"Signs 2/SignsNFT.sol": {
-			"keccak256": "0x76497040cb3695b37d7324a86e6543f528c986d1e9d3ec62c20af491c5e53197",
+			"keccak256": "0xf7cbfbb3053aa5acb2b88ec47863cdf70032d69f6b5a0eb403256f8e1dc592d3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8fec1ffa5d55f6ca5380684c7866be4060ee59e03768a57f64acdbba9ec1e064",
-				"dweb:/ipfs/QmTsJedgtnDnbw7n3Ej9zUsQ4SaoJbijLQ9XdVYa6ggiiK"
+				"bzz-raw://d15da0955672c64d47c958a55d553fac73ba2afbfbca13ce12bfc83ea6b4b628",
+				"dweb:/ipfs/QmeRxFDM1duWBK4M2VFBfQL2eBUL4My7upPyU3Dm2tyj1g"
 			]
 		}
 	},

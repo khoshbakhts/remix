@@ -14,11 +14,12 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         Location home;
         Location current;
         uint256 totalMoves;
-        uint256 totalCarriers;
+        uint256 totalDistanceMeters;
         uint256 weight;
         address owner;
         bool isPickedUp;
         bytes32 contentHash;
+        uint256 signWage;    // Custom wage per meter for this sign
     }
 
     Counters.Counter private _tokenIds;
@@ -28,6 +29,7 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     
     uint256 public constant MAX_SIGNS_PER_USER = 1;
     uint256 public constant MAX_PICKUP_RADIUS = 100; // meters
+    uint256 public baseWageRate = 1; // 1 token per 100 meters, can be updated by owner
     
     ISigns public signsHistory;
 
@@ -37,6 +39,8 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     event SignPickedUp(uint256 indexed tokenId, address indexed carrier, Location location);
     event SignDropped(uint256 indexed tokenId, address indexed carrier, Location location);
     event ContentHashUpdated(uint256 indexed tokenId, bytes32 newContentHash);
+    event SignWageUpdated(uint256 indexed tokenId, uint256 newWage);
+    event BaseWageRateUpdated(uint256 newRate);
 
     error ExceedsMaxSignsPerUser();
     error SignNotFound();
@@ -46,6 +50,8 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     error OutsidePickupRadius();
     error InvalidLocation();
     error SignsHistoryNotSet();
+    error InvalidWage();
+    error UnauthorizedOwner();
 
     constructor() ERC721("Signs Game NFT", "SIGN") Ownable(msg.sender) {}
 
@@ -62,6 +68,19 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         bytes32 contentHash
     ) external pure override {
         revert("SignsNFT: not implemented");
+    }
+
+    function updateBaseWageRate(uint256 newRate) external onlyOwner {
+        baseWageRate = newRate;
+        emit BaseWageRateUpdated(newRate);
+    }
+
+    function updateSignWage(uint256 tokenId, uint256 newWage) external {
+        Sign storage sign = signs[tokenId];
+        if (sign.owner != msg.sender) revert UnauthorizedOwner();
+        
+        sign.signWage = newWage;
+        emit SignWageUpdated(tokenId, newWage);
     }
 
     function createSign(Location calldata homeLocation) 
@@ -85,7 +104,9 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         newSign.current = homeLocation;
         newSign.owner = msg.sender;
         newSign.weight = 0;
+        newSign.totalDistanceMeters = 0;
         newSign.isPickedUp = false;
+        newSign.signWage = baseWageRate; // Initialize with default base rate
 
         userSignCount[msg.sender]++;
         _safeMint(msg.sender, newTokenId);
@@ -112,7 +133,7 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         emit SignPickedUp(tokenId, msg.sender, location);
     }
 
-    function dropSign(
+function dropSign(
         uint256 tokenId, 
         Location calldata location,
         bytes32 contentHash
@@ -130,13 +151,23 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         if (!_isValidLocation(location)) revert InvalidLocation();
 
         Location memory oldLocation = sign.current;
+        
+        // Update sign state
         sign.current = location;
         sign.isPickedUp = false;
         sign.totalMoves++;
-        sign.totalCarriers++;
+
+        // Calculate and update total distance
+        uint256 movedDistance = _calculateDistance(oldLocation, location);
+        sign.totalDistanceMeters += movedDistance;
+
+        // HERE: Calculate and update new weight based on total moves and distance
+        sign.weight = _calculateNewWeight(sign.totalMoves, sign.totalDistanceMeters);
+        
         sign.contentHash = contentHash;
 
-        uint256 wage = _calculateWage(oldLocation, location, sign.weight);
+        // Calculate wage using updated weight
+        uint256 wage = _calculateWage(tokenId, oldLocation, location, sign.weight);
 
         signsHistory.recordMovement(
             tokenId,
@@ -153,6 +184,67 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         emit SignMoved(tokenId, msg.sender, oldLocation, location);
         emit ContentHashUpdated(tokenId, contentHash);
     }
+
+    function _calculateDistance(
+        Location memory from,
+        Location memory to
+    ) internal pure returns (uint256) {
+        int64 latDiff = to.latitude - from.latitude;
+        int64 lonDiff = to.longitude - from.longitude;
+        
+        uint64 absLatDiff = latDiff < 0 ? uint64(-latDiff) : uint64(latDiff);
+        uint64 absLonDiff = lonDiff < 0 ? uint64(-lonDiff) : uint64(lonDiff);
+        
+        uint256 distance = uint256(absLatDiff) * uint256(absLatDiff) + 
+                          uint256(absLonDiff) * uint256(absLonDiff);
+        
+        return distance * 111000; // Convert to meters
+    }    
+
+    function _calculateNewWeight(
+        uint256 totalMoves,
+        uint256 totalDistanceMeters
+    ) internal view returns (uint256) {
+        // Base weight from number of moves (increases with more moves)
+        // Earlier moves have less impact, later moves have more impact
+        uint256 moveWeight = (totalMoves * totalMoves * moveWeightMultiplier) / 
+                           ((totalMoves + moveWeightDivisor) * moveWeightDivisor);
+        
+        // Weight from distance (1 point per kilometer, divided by distanceWeightDivisor)
+        uint256 distanceWeight = totalDistanceMeters / distanceWeightDivisor;
+        
+        return moveWeight + distanceWeight;
+    }
+
+    // Weight calculation parameters
+    uint256 public moveWeightMultiplier = 10;     // Base multiplier for move weight
+    uint256 public moveWeightDivisor = 10;        // Divisor for move count in weight calculation
+    uint256 public distanceWeightDivisor = 10000; // Converts to km and divides by 10 (1km = 0.1 weight)
+    
+    event WeightParametersUpdated(
+        uint256 newMoveWeightMultiplier,
+        uint256 newMoveWeightDivisor,
+        uint256 newDistanceWeightDivisor
+    );
+
+    // Admin functions to update weight parameters
+    function updateWeightParameters(
+        uint256 newMoveWeightMultiplier,
+        uint256 newMoveWeightDivisor,
+        uint256 newDistanceWeightDivisor
+    ) external onlyOwner {
+        require(newMoveWeightDivisor > 0 && newDistanceWeightDivisor > 0, "Invalid divisors");
+        
+        moveWeightMultiplier = newMoveWeightMultiplier;
+        moveWeightDivisor = newMoveWeightDivisor;
+        distanceWeightDivisor = newDistanceWeightDivisor;
+        
+        emit WeightParametersUpdated(
+            newMoveWeightMultiplier,
+            newMoveWeightDivisor,
+            newDistanceWeightDivisor
+        );
+    }    
 
     function updateHome(uint256 tokenId, Location calldata newHome) 
         external 
@@ -186,10 +278,11 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     }
 
     function _calculateWage(
+        uint256 tokenId,
         Location memory from,
         Location memory to,
         uint256 weight
-    ) internal pure returns (uint256) {
+    ) internal view returns (uint256) {
         int64 latDiff = to.latitude - from.latitude;
         int64 lonDiff = to.longitude - from.longitude;
         
@@ -199,9 +292,16 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         uint256 distance = uint256(absLatDiff) * uint256(absLatDiff) + 
                           uint256(absLonDiff) * uint256(absLonDiff);
         
-        uint256 baseWage = (distance * 111000) / 100;
-        uint256 weightPenalty = (baseWage * weight) / 10000;
-        return baseWage > weightPenalty ? baseWage - weightPenalty : 0;
+        // Convert to meters and apply sign-specific wage rate
+        uint256 distanceMeters = (distance * 111000);
+        uint256 baseWage = (distanceMeters * signs[tokenId].signWage) / 100; // Wage per 100 meters
+        
+        // Apply weight multiplier (heavier signs cost more to move)
+        // Weight increases price by 1% for each point of weight
+        uint256 weightMultiplier = 10000 + weight;  // Base 10000 (100%) + weight percentage
+        uint256 finalWage = (baseWage * weightMultiplier) / 10000;
+        
+        return finalWage;
     }
 
     function _isValidLocation(Location memory location) 
