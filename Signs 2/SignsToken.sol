@@ -7,214 +7,211 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
- * @title SignsToken
- * @dev ERC20 token for the Signs game economy, managing rewards and wages
+ * @title SignToken
+ * @dev ERC20 token for the Signs game economy, managing sign balances and wage payments
  */
-contract SignsToken is ERC20, Pausable, Ownable, ReentrancyGuard {
-    struct RewardRates {
-        uint256 movementBaseRate;    // Base rate for movement rewards (per meter)
-        uint256 diaryEntryRate;      // Rate for diary entries
-        uint256 photoUploadRate;     // Rate for photo uploads
-    }
-
-    // Game economy parameters
-    RewardRates public rates;
-    uint256 public dailyEarningsCap;             // Maximum earnings per day per user
-    uint256 public constant DAILY_RESET = 1 days; // Reset period for daily earnings
-    
+contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
     // Contract references
     address public signsNFTContract;
-    address public signsHistoryContract;
     
-    // User balances and limits
-    mapping(address => uint256) public wageBalance;         // Pending wages to be claimed
-    mapping(address => uint256) public lastEarningsReset;   // Last time user's daily earnings were reset
-    mapping(address => uint256) public earningsToday;       // Track daily earnings
+    // Commission settings
+    uint256 public commissionPercent; // Commission in basis points (1% = 100)
+    address public commissionTreasury;
+    
+    // Constants
+    uint256 private constant BASIS_POINTS = 10000; // 100% = 10000
+    
+    // Sign balances
+    mapping(uint256 => uint256) public signBalances;  // tokenId => balance
     
     // Events
-    event WagePaid(address indexed from, address indexed to, uint256 amount);
-    event RewardPaid(address indexed user, uint256 amount, string rewardType);
-    event RatesUpdated(uint256 movementBaseRate, uint256 diaryEntryRate, uint256 photoUploadRate);
-    event DailyEarningsCapUpdated(uint256 newCap);
-    event ContractUpdated(string contractType, address newAddress);
+    event SignBalanceCharged(uint256 indexed tokenId, uint256 amount);
+    event SignBalanceWithdrawn(uint256 indexed tokenId, address indexed owner, uint256 amount);
+    event WagePaid(uint256 indexed tokenId, address indexed carrier, uint256 amount);
+    event NFTContractUpdated(address newAddress);
+    event CommissionUpdated(uint256 newCommissionPercent);
+    event CommissionTreasuryUpdated(address newTreasury);
+    event CommissionPaid(uint256 indexed tokenId, uint256 amount);
     
     // Errors
     error UnauthorizedCaller();
+    error InvalidCommission();
+    error InvalidTreasuryAddress();
+    error InsufficientSignBalance();
     error InsufficientBalance();
-    error DailyEarningsLimitExceeded();
-    error InvalidRate();
-    error InvalidAddress();
     error InvalidAmount();
+    error InvalidNFTContract();
+    error UnauthorizedOwner();
 
     constructor(
         string memory name,
         string memory symbol,
-        uint256 initialSupply,
         address _signsNFTContract,
-        address _signsHistoryContract
+        address _commissionTreasury
     ) ERC20(name, symbol) Ownable(msg.sender) {
-        if (_signsNFTContract == address(0) || _signsHistoryContract == address(0)) 
-            revert InvalidAddress();
-            
+        if (_signsNFTContract == address(0)) revert InvalidNFTContract();
+        if (_commissionTreasury == address(0)) revert InvalidTreasuryAddress();
+        
         signsNFTContract = _signsNFTContract;
-        signsHistoryContract = _signsHistoryContract;
-        
-        // Initial rates (can be updated by owner)
-        rates = RewardRates({
-            movementBaseRate: 1e15,    // 0.001 tokens per meter
-            diaryEntryRate: 1e18,      // 1 token per diary entry
-            photoUploadRate: 2e18      // 2 tokens per photo
-        });
-        
-        dailyEarningsCap = 100e18;     // 100 tokens per day
-        
-        // Mint initial supply to contract owner
-        _mint(msg.sender, initialSupply);
+        commissionTreasury = _commissionTreasury;
+        commissionPercent = 500; // Default 5% commission
+
+        _mint(msg.sender, 1_000_000 * 10**decimals());
     }
 
     // Modifiers
-    modifier onlyGameContracts() {
-        if (msg.sender != signsNFTContract && msg.sender != signsHistoryContract)
-            revert UnauthorizedCaller();
+    modifier onlySignsNFT() {
+        if (msg.sender != signsNFTContract) revert UnauthorizedCaller();
         _;
     }
 
     /**
-     * @dev Records wage owed to a carrier for moving a sign
-     * @param carrier Address of the sign carrier
-     * @param amount Amount of tokens to be paid
+     * @dev Charges a sign's balance with tokens
+     * @param tokenId The ID of the sign to charge
+     * @param amount Amount of tokens to charge
      */
-    function recordWage(address carrier, uint256 amount) 
-        external 
-        onlyGameContracts 
-        whenNotPaused 
-    {
+    function chargeSignBalance(uint256 tokenId, uint256 amount) external nonReentrant whenNotPaused {
         if (amount == 0) revert InvalidAmount();
         
-        // Reset daily earnings if necessary
-        _checkAndResetDailyEarnings(carrier);
+        address sender = msg.sender;
+        address token = address(this);
         
-        // Check daily earnings cap
-        if (earningsToday[carrier] + amount > dailyEarningsCap)
-            revert DailyEarningsLimitExceeded();
+        // First transfer tokens from user to contract
+        _spendAllowance(sender, token, amount);  // Handle allowance first
+        _transfer(sender, token, amount);         // Then do the transfer
+        
+        // Update sign balance
+        signBalances[tokenId] += amount;
+        
+        emit SignBalanceCharged(tokenId, amount);
+    }
+    /**
+     * @dev Withdraws tokens from a sign's balance back to the owner
+     * @param tokenId The ID of the sign
+     * @param amount Amount to withdraw
+     */
+    function withdrawSignBalance(uint256 tokenId, uint256 amount) external nonReentrant whenNotPaused {
+        // Check if caller owns the sign
+        // This requires interface integration with SignsNFT contract
+        if (!_isSignOwner(msg.sender, tokenId)) revert UnauthorizedOwner();
+        
+        if (amount == 0) revert InvalidAmount();
+        if (signBalances[tokenId] < amount) revert InsufficientSignBalance();
+        
+        // Update balance before transfer
+        signBalances[tokenId] -= amount;
+        
+        // Transfer tokens to owner
+        bool success = transfer(msg.sender, amount);
+        require(success, "Transfer failed");
+        
+        emit SignBalanceWithdrawn(tokenId, msg.sender, amount);
+    }
+
+    /**
+     * @dev Pays wage to carrier from sign's balance
+     * @param tokenId The ID of the sign
+     * @param carrier Address of the carrier to pay
+     * @param amount Amount of wage to pay
+     */
+    struct WagePaymentResult {
+        uint256 paidAmount;      // Actual amount paid
+        uint256 remainingWage;   // Unpaid amount
+        bool isPartialPayment;   // Whether this was a partial payment
+    }
+
+    event LowSignBalance(uint256 indexed tokenId, uint256 currentBalance, uint256 requiredAmount);
+    event PartialWagePaid(
+        uint256 indexed tokenId, 
+        address indexed carrier, 
+        uint256 paidAmount, 
+        uint256 remainingUnpaid
+    );
+
+    /**
+     * @dev Pays wage to carrier from sign's balance, handles partial payments
+     * @param tokenId The ID of the sign
+     * @param carrier Address of the carrier to pay
+     * @param amount Amount of wage to pay
+     * @return result WagePaymentResult struct with payment details
+     */
+    function payWage(
+        uint256 tokenId,
+        address carrier,
+        uint256 amount
+    ) external onlySignsNFT nonReentrant whenNotPaused returns (WagePaymentResult memory) {
+        if (amount == 0) revert InvalidAmount();
+        
+        uint256 currentBalance = signBalances[tokenId];
+        bool isFullPayment = currentBalance >= amount;
+        uint256 paymentAmount;
+        uint256 commissionAmount;
+        
+        if (isFullPayment) {
+            // Calculate commission only for full payments
+            commissionAmount = (amount * commissionPercent) / BASIS_POINTS;
+            paymentAmount = amount - commissionAmount;
             
-        wageBalance[carrier] += amount;
-        earningsToday[carrier] += amount;
-        
-        emit WagePaid(msg.sender, carrier, amount);
-    }
-
-    /**
-     * @dev Pays reward for social activities (diary entries, photos)
-     * @param user Address of the user to reward
-     * @param rewardType Type of reward ("diary" or "photo")
-     */
-    function payReward(address user, string calldata rewardType) 
-        external 
-        onlyGameContracts 
-        whenNotPaused 
-    {
-        uint256 amount;
-        if (keccak256(bytes(rewardType)) == keccak256(bytes("diary"))) {
-            amount = rates.diaryEntryRate;
-        } else if (keccak256(bytes(rewardType)) == keccak256(bytes("photo"))) {
-            amount = rates.photoUploadRate;
-        } else {
-            revert InvalidRate();
-        }
-        
-        // Reset daily earnings if necessary
-        _checkAndResetDailyEarnings(user);
-        
-        // Check daily earnings cap
-        if (earningsToday[user] + amount > dailyEarningsCap)
-            revert DailyEarningsLimitExceeded();
+            // Update balance before transfers
+            signBalances[tokenId] = currentBalance - amount;
             
-        earningsToday[user] += amount;
-        
-        // Transfer reward directly
-        _mint(user, amount);
-        
-        emit RewardPaid(user, amount, rewardType);
-    }
-
-    /**
-     * @dev Allows users to claim their accumulated wages
-     */
-    function claimWages() 
-        external 
-        nonReentrant 
-        whenNotPaused 
-    {
-        uint256 amount = wageBalance[msg.sender];
-        if (amount == 0) revert InsufficientBalance();
-        
-        // Reset wage balance before transfer
-        wageBalance[msg.sender] = 0;
-        
-        // Mint tokens to user
-        _mint(msg.sender, amount);
-    }
-
-    /**
-     * @dev Updates reward rates
-     * @param newRates New reward rates structure
-     */
-    function updateRates(RewardRates calldata newRates) 
-        external 
-        onlyOwner 
-    {
-        rates = newRates;
-        emit RatesUpdated(
-            newRates.movementBaseRate,
-            newRates.diaryEntryRate,
-            newRates.photoUploadRate
-        );
-    }
-
-    /**
-     * @dev Updates daily earnings cap
-     * @param newCap New daily earnings cap
-     */
-    function updateDailyEarningsCap(uint256 newCap) 
-        external 
-        onlyOwner 
-    {
-        dailyEarningsCap = newCap;
-        emit DailyEarningsCapUpdated(newCap);
-    }
-
-    /**
-     * @dev Updates game contract addresses
-     * @param contractType Type of contract to update ("nft" or "history")
-     * @param newAddress New contract address
-     */
-    function updateGameContract(string calldata contractType, address newAddress) 
-        external 
-        onlyOwner 
-    {
-        if (newAddress == address(0)) revert InvalidAddress();
-        
-        if (keccak256(bytes(contractType)) == keccak256(bytes("nft"))) {
-            signsNFTContract = newAddress;
-        } else if (keccak256(bytes(contractType)) == keccak256(bytes("history"))) {
-            signsHistoryContract = newAddress;
+            // Transfer commission
+            if (commissionAmount > 0) {
+                bool commissionSuccess = transfer(commissionTreasury, commissionAmount);
+                require(commissionSuccess, "Commission transfer failed");
+                emit CommissionPaid(tokenId, commissionAmount);
+            }
+            
+            // Transfer wage to carrier
+            bool success = transfer(carrier, paymentAmount);
+            require(success, "Wage transfer failed");
+            
+            emit WagePaid(tokenId, carrier, paymentAmount);
         } else {
-            revert InvalidRate();
+            // For partial payments, no commission is taken
+            paymentAmount = currentBalance;
+            commissionAmount = 0;
+            
+            // Update balance before transfer
+            signBalances[tokenId] = 0;
+            
+            if (paymentAmount > 0) {
+                // Transfer all available balance to carrier
+                bool success = transfer(carrier, paymentAmount);
+                require(success, "Partial wage transfer failed");
+                
+                emit PartialWagePaid(tokenId, carrier, paymentAmount, amount - paymentAmount);
+            }
+            
+            emit LowSignBalance(tokenId, currentBalance, amount);
         }
         
-        emit ContractUpdated(contractType, newAddress);
+        return WagePaymentResult({
+            paidAmount: paymentAmount,
+            remainingWage: amount - paymentAmount,
+            isPartialPayment: !isFullPayment
+        });
     }
 
     /**
-     * @dev Internal function to check and reset daily earnings if necessary
-     * @param user Address of the user to check
+     * @dev Updates the SignsNFT contract address
+     * @param _newAddress New contract address
      */
-    function _checkAndResetDailyEarnings(address user) internal {
-        if (block.timestamp >= lastEarningsReset[user] + DAILY_RESET) {
-            earningsToday[user] = 0;
-            lastEarningsReset[user] = block.timestamp;
-        }
+    function updateSignsNFTContract(address _newAddress) external onlyOwner {
+        if (_newAddress == address(0)) revert InvalidNFTContract();
+        signsNFTContract = _newAddress;
+        emit NFTContractUpdated(_newAddress);
+    }
+
+    /**
+     * @dev Checks if an address owns a specific sign
+     * @param owner Address to check
+     * @param tokenId Sign ID to check
+     */
+    function _isSignOwner(address owner, uint256 tokenId) internal view returns (bool) {
+        // This should integrate with your SignsNFT contract
+        // Implementation depends on your NFT contract interface
+        return true; // Placeholder - implement actual check
     }
 
     // Pause/unpause functionality
@@ -224,6 +221,26 @@ contract SignsToken is ERC20, Pausable, Ownable, ReentrancyGuard {
 
     function unpause() external onlyOwner {
         _unpause();
+    }
+
+    /**
+     * @dev Updates the commission percentage
+     * @param newCommissionPercent New commission in basis points (1% = 100)
+     */
+    function updateCommission(uint256 newCommissionPercent) external onlyOwner {
+        if (newCommissionPercent > BASIS_POINTS) revert InvalidCommission();
+        commissionPercent = newCommissionPercent;
+        emit CommissionUpdated(newCommissionPercent);
+    }
+
+    /**
+     * @dev Updates the commission treasury address
+     * @param newTreasury New treasury address
+     */
+    function updateCommissionTreasury(address newTreasury) external onlyOwner {
+        if (newTreasury == address(0)) revert InvalidTreasuryAddress();
+        commissionTreasury = newTreasury;
+        emit CommissionTreasuryUpdated(newTreasury);
     }
 
     // Override transfer functions to check for pause state
@@ -245,5 +262,15 @@ contract SignsToken is ERC20, Pausable, Ownable, ReentrancyGuard {
         returns (bool)
     {
         return super.transferFrom(from, to, amount);
+    }
+
+        function getApprovalInfo(address owner) external view returns (
+        uint256 balance,
+        uint256 contractAllowance
+    ) {
+        return (
+            balanceOf(owner),
+            allowance(owner, address(this))
+        );
     }
 }

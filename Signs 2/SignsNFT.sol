@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ISigns.sol";
+import "./ISignToken.sol";
 
 contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     using Counters for Counters.Counter;
@@ -32,6 +33,7 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     uint256 public baseWageRate = 1; // 1 token per 100 meters, can be updated by owner
     
     ISigns public signsHistory;
+    ISignToken public signToken;    
 
     event SignCreated(uint256 indexed tokenId, address indexed owner, Location home);
     event SignMoved(uint256 indexed tokenId, address indexed carrier, Location from, Location to);
@@ -41,6 +43,13 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     event ContentHashUpdated(uint256 indexed tokenId, bytes32 newContentHash);
     event SignWageUpdated(uint256 indexed tokenId, uint256 newWage);
     event BaseWageRateUpdated(uint256 newRate);
+    event WagePaymentProcessed(
+        uint256 indexed tokenId,
+        address indexed carrier,
+        uint256 requestedAmount,
+        uint256 paidAmount,
+        bool isPartialPayment
+    );    
 
     error ExceedsMaxSignsPerUser();
     error SignNotFound();
@@ -52,11 +61,19 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     error SignsHistoryNotSet();
     error InvalidWage();
     error UnauthorizedOwner();
+    error SignTokenNotSet();
+    error InvalidAddress();
+    error InvalidSignsHistoryAddress();
 
     constructor() ERC721("Signs Game NFT", "SIGN") Ownable(msg.sender) {}
 
     function setSignsHistory(address _signsHistory) external onlyOwner {
         signsHistory = ISigns(_signsHistory);
+    }
+
+    function setSignToken(address _signToken) external onlyOwner {
+        if (_signToken == address(0)) revert InvalidAddress();
+        signToken = ISignToken(_signToken);
     }
 
     function recordMovement(
@@ -133,15 +150,13 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         emit SignPickedUp(tokenId, msg.sender, location);
     }
 
-function dropSign(
+    function dropSign(
         uint256 tokenId, 
         Location calldata location,
         bytes32 contentHash
-    ) 
-        external 
-        whenNotPaused 
-    {
+    ) external whenNotPaused {
         if (address(signsHistory) == address(0)) revert SignsHistoryNotSet();
+        if (address(signToken) == address(0)) revert SignTokenNotSet();
         
         Sign storage sign = signs[tokenId];
         
@@ -161,28 +176,41 @@ function dropSign(
         uint256 movedDistance = _calculateDistance(oldLocation, location);
         sign.totalDistanceMeters += movedDistance;
 
-        // HERE: Calculate and update new weight based on total moves and distance
+        // Calculate and update new weight based on total moves and distance
         sign.weight = _calculateNewWeight(sign.totalMoves, sign.totalDistanceMeters);
         
         sign.contentHash = contentHash;
 
         // Calculate wage using updated weight
-        uint256 wage = _calculateWage(tokenId, oldLocation, location, sign.weight);
+        uint256 calculatedWage = _calculateWage(tokenId, oldLocation, location, sign.weight);
 
+        // Process wage payment through SignToken contract
+        ISignToken.WagePaymentResult memory paymentResult = 
+            signToken.payWage(tokenId, msg.sender, calculatedWage);
+
+        // Record movement in history
         signsHistory.recordMovement(
             tokenId,
             msg.sender,
             oldLocation,
             location,
-            wage,
+            paymentResult.paidAmount, // Use actual paid amount
             contentHash
         );
 
         delete signCarriers[tokenId];
 
+        // Emit all relevant events
         emit SignDropped(tokenId, msg.sender, location);
         emit SignMoved(tokenId, msg.sender, oldLocation, location);
         emit ContentHashUpdated(tokenId, contentHash);
+        emit WagePaymentProcessed(
+            tokenId,
+            msg.sender,
+            calculatedWage,
+            paymentResult.paidAmount,
+            paymentResult.isPartialPayment
+        );
     }
 
     function _calculateDistance(

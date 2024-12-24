@@ -120,7 +120,17 @@
 			},
 			{
 				"inputs": [],
+				"name": "InvalidAddress",
+				"type": "error"
+			},
+			{
+				"inputs": [],
 				"name": "InvalidLocation",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidSignsHistoryAddress",
 				"type": "error"
 			},
 			{
@@ -168,6 +178,11 @@
 			{
 				"inputs": [],
 				"name": "SignNotPickedUp",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "SignTokenNotSet",
 				"type": "error"
 			},
 			{
@@ -581,6 +596,43 @@
 					}
 				],
 				"name": "Unpaused",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "carrier",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "requestedAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "paidAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "isPartialPayment",
+						"type": "bool"
+					}
+				],
+				"name": "WagePaymentProcessed",
 				"type": "event"
 			},
 			{
@@ -1094,6 +1146,19 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "_signToken",
+						"type": "address"
+					}
+				],
+				"name": "setSignToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "_signsHistory",
 						"type": "address"
 					}
@@ -1115,6 +1180,19 @@
 				"outputs": [
 					{
 						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "signToken",
+				"outputs": [
+					{
+						"internalType": "contract ISignToken",
 						"name": "",
 						"type": "address"
 					}
@@ -1742,6 +1820,14 @@
 				"dweb:/ipfs/QmVUSvooZKEdEdap619tcJjTLcAuH6QBdZqAzWwnAXZAWJ"
 			]
 		},
+		"Signs 2/ISignToken.sol": {
+			"keccak256": "0x35d79287c59f6ae3a0ed55427d0e7ea991c36dd359a20e077aeb7893da0aa6d6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7be561f272ba546a99728efd4754b6c7b2f00a0964249c1c00af72437adee0c9",
+				"dweb:/ipfs/QmVpHNXJDyPtY85xdRybrFid718Djoa937iEJBFu2wXch8"
+			]
+		},
 		"Signs 2/ISigns.sol": {
 			"keccak256": "0x9c0bef879fb7feff9e671c7da1d5ee05635a3efd3828c3fa2c0ca8bf45c30fe3",
 			"license": "MIT",
@@ -1751,11 +1837,11 @@
 			]
 		},
 		"Signs 2/SignsNFT.sol": {
-			"keccak256": "0xf7cbfbb3053aa5acb2b88ec47863cdf70032d69f6b5a0eb403256f8e1dc592d3",
+			"keccak256": "0x2646dff4fa1eb3b1eb720094a11936181137d89011aa4fc66910a3597769b12f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d15da0955672c64d47c958a55d553fac73ba2afbfbca13ce12bfc83ea6b4b628",
-				"dweb:/ipfs/QmeRxFDM1duWBK4M2VFBfQL2eBUL4My7upPyU3Dm2tyj1g"
+				"bzz-raw://de31561820e95044484576495b8e069f95b3798255cd68a45ea3756ad9fc841e",
+				"dweb:/ipfs/QmaCxD17FcfwUsKMuUwtbuBQNn6JxPsRP2oDXoFtptWrGJ"
 			]
 		}
 	},

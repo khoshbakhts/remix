@@ -1,0 +1,429 @@
+{
+	"id": "a21eca02027d5aa77c8c2256196e0d97",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.26",
+	"solcLongVersion": "0.8.26+commit.8a97fa7a",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"Signs 2/ISignToken.sol": {
+				"content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.19;\r\n\r\ninterface ISignToken {\r\n    struct WagePaymentResult {\r\n        uint256 paidAmount;\r\n        uint256 remainingWage;\r\n        bool isPartialPayment;\r\n    }\r\n\r\n    function payWage(\r\n        uint256 tokenId,\r\n        address carrier,\r\n        uint256 amount\r\n    ) external returns (WagePaymentResult memory);\r\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"contracts": {
+			"Signs 2/ISignToken.sol": {
+				"ISignToken": {
+					"abi": [
+						{
+							"inputs": [
+								{
+									"internalType": "uint256",
+									"name": "tokenId",
+									"type": "uint256"
+								},
+								{
+									"internalType": "address",
+									"name": "carrier",
+									"type": "address"
+								},
+								{
+									"internalType": "uint256",
+									"name": "amount",
+									"type": "uint256"
+								}
+							],
+							"name": "payWage",
+							"outputs": [
+								{
+									"components": [
+										{
+											"internalType": "uint256",
+											"name": "paidAmount",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "remainingWage",
+											"type": "uint256"
+										},
+										{
+											"internalType": "bool",
+											"name": "isPartialPayment",
+											"type": "bool"
+										}
+									],
+									"internalType": "struct ISignToken.WagePaymentResult",
+									"name": "",
+									"type": "tuple"
+								}
+							],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"payWage(uint256,address,uint256)": "ef9ecc1d"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"carrier\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"payWage\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"paidAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"remainingWage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPartialPayment\",\"type\":\"bool\"}],\"internalType\":\"struct ISignToken.WagePaymentResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"Signs 2/ISignToken.sol\":\"ISignToken\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"Signs 2/ISignToken.sol\":{\"keccak256\":\"0x35d79287c59f6ae3a0ed55427d0e7ea991c36dd359a20e077aeb7893da0aa6d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7be561f272ba546a99728efd4754b6c7b2f00a0964249c1c00af72437adee0c9\",\"dweb:/ipfs/QmVpHNXJDyPtY85xdRybrFid718Djoa937iEJBFu2wXch8\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"Signs 2/ISignToken.sol": {
+				"ast": {
+					"absolutePath": "Signs 2/ISignToken.sol",
+					"exportedSymbols": {
+						"ISignToken": [
+							21
+						]
+					},
+					"id": 22,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".19"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "33:24:0"
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "ISignToken",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"fullyImplemented": false,
+							"id": 21,
+							"linearizedBaseContracts": [
+								21
+							],
+							"name": "ISignToken",
+							"nameLocation": "71:10:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"canonicalName": "ISignToken.WagePaymentResult",
+									"id": 8,
+									"members": [
+										{
+											"constant": false,
+											"id": 3,
+											"mutability": "mutable",
+											"name": "paidAmount",
+											"nameLocation": "133:10:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 8,
+											"src": "125:18:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 2,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "125:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 5,
+											"mutability": "mutable",
+											"name": "remainingWage",
+											"nameLocation": "162:13:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 8,
+											"src": "154:21:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 4,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "154:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 7,
+											"mutability": "mutable",
+											"name": "isPartialPayment",
+											"nameLocation": "191:16:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 8,
+											"src": "186:21:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_bool",
+												"typeString": "bool"
+											},
+											"typeName": {
+												"id": 6,
+												"name": "bool",
+												"nodeType": "ElementaryTypeName",
+												"src": "186:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "WagePaymentResult",
+									"nameLocation": "96:17:0",
+									"nodeType": "StructDefinition",
+									"scope": 21,
+									"src": "89:126:0",
+									"visibility": "public"
+								},
+								{
+									"functionSelector": "ef9ecc1d",
+									"id": 20,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "payWage",
+									"nameLocation": "232:7:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 15,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 10,
+												"mutability": "mutable",
+												"name": "tokenId",
+												"nameLocation": "258:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 20,
+												"src": "250:15:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 9,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "250:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 12,
+												"mutability": "mutable",
+												"name": "carrier",
+												"nameLocation": "284:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 20,
+												"src": "276:15:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 11,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "276:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 14,
+												"mutability": "mutable",
+												"name": "amount",
+												"nameLocation": "310:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 20,
+												"src": "302:14:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 13,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "302:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "239:84:0"
+									},
+									"returnParameters": {
+										"id": 19,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 18,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 20,
+												"src": "342:24:0",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_WagePaymentResult_$8_memory_ptr",
+													"typeString": "struct ISignToken.WagePaymentResult"
+												},
+												"typeName": {
+													"id": 17,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 16,
+														"name": "WagePaymentResult",
+														"nameLocations": [
+															"342:17:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 8,
+														"src": "342:17:0"
+													},
+													"referencedDeclaration": 8,
+													"src": "342:17:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_WagePaymentResult_$8_storage_ptr",
+														"typeString": "struct ISignToken.WagePaymentResult"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "341:26:0"
+									},
+									"scope": 21,
+									"src": "223:145:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								}
+							],
+							"scope": 22,
+							"src": "61:310:0",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "33:338:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}
