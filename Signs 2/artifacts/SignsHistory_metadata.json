@@ -32,6 +32,11 @@
 				"type": "error"
 			},
 			{
+				"inputs": [],
+				"name": "MovementNotFound",
+				"type": "error"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -70,11 +75,17 @@
 					{
 						"indexed": false,
 						"internalType": "bytes32",
-						"name": "newRoot",
+						"name": "movementHash",
 						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "isValid",
+						"type": "bool"
 					}
 				],
-				"name": "MovementRootUpdated",
+				"name": "MovementVerified",
 				"type": "event"
 			},
 			{
@@ -232,6 +243,25 @@
 						"type": "uint256"
 					}
 				],
+				"name": "getMovementHistory",
+				"outputs": [
+					{
+						"internalType": "bytes32[]",
+						"name": "",
+						"type": "bytes32[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
 				"name": "getRecentMovements",
 				"outputs": [
 					{
@@ -294,6 +324,30 @@
 						"internalType": "struct ISigns.MovementRecord[]",
 						"name": "",
 						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "movementHashes",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
 					}
 				],
 				"stateMutability": "view",
@@ -485,25 +539,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "signMovementRoots",
-				"outputs": [
-					{
-						"internalType": "bytes32",
-						"name": "",
-						"type": "bytes32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "signsNFTContract",
 				"outputs": [
@@ -558,24 +593,6 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "tokenId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "newRoot",
-						"type": "bytes32"
-					}
-				],
-				"name": "updateMovementRoot",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "address",
 						"name": "_newAddress",
 						"type": "address"
@@ -594,17 +611,73 @@
 						"type": "uint256"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "movementHash",
-						"type": "bytes32"
+						"components": [
+							{
+								"components": [
+									{
+										"internalType": "int64",
+										"name": "latitude",
+										"type": "int64"
+									},
+									{
+										"internalType": "int64",
+										"name": "longitude",
+										"type": "int64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "timestamp",
+										"type": "uint64"
+									}
+								],
+								"internalType": "struct ISigns.Location",
+								"name": "fromLocation",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"internalType": "int64",
+										"name": "latitude",
+										"type": "int64"
+									},
+									{
+										"internalType": "int64",
+										"name": "longitude",
+										"type": "int64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "timestamp",
+										"type": "uint64"
+									}
+								],
+								"internalType": "struct ISigns.Location",
+								"name": "toLocation",
+								"type": "tuple"
+							},
+							{
+								"internalType": "address",
+								"name": "carrier",
+								"type": "address"
+							},
+							{
+								"internalType": "uint96",
+								"name": "wage",
+								"type": "uint96"
+							}
+						],
+						"internalType": "struct ISigns.MovementRecord",
+						"name": "movementData",
+						"type": "tuple"
 					},
 					{
-						"internalType": "bytes32[]",
-						"name": "proof",
-						"type": "bytes32[]"
+						"internalType": "bytes32",
+						"name": "contentHash",
+						"type": "bytes32"
 					}
 				],
-				"name": "verifyMovement",
+				"name": "verifyMovementRecord",
 				"outputs": [
 					{
 						"internalType": "bool",
@@ -617,6 +690,7 @@
 			}
 		],
 		"devdoc": {
+			"details": "Manages and verifies the history of sign movements with off-chain content integration",
 			"errors": {
 				"OwnableInvalidOwner(address)": [
 					{
@@ -639,19 +713,57 @@
 			},
 			"kind": "dev",
 			"methods": {
+				"getMovementHistory(uint256)": {
+					"details": "Retrieves complete movement history for a sign",
+					"params": {
+						"tokenId": "The ID of the sign"
+					},
+					"returns": {
+						"_0": "hashes Array of movement hashes in chronological order"
+					}
+				},
+				"getRecentMovements(uint256)": {
+					"details": "Returns recent movements for quick access",
+					"params": {
+						"tokenId": "The ID of the sign"
+					}
+				},
 				"owner()": {
 					"details": "Returns the address of the current owner."
 				},
 				"paused()": {
 					"details": "Returns true if the contract is paused, and false otherwise."
 				},
+				"recordMovement(uint256,address,(int64,int64,uint64),(int64,int64,uint64),uint256,bytes32)": {
+					"details": "Records a new movement with its associated content hash",
+					"params": {
+						"carrier": "Address of the carrier",
+						"contentHash": "Hash of off-chain content (photos, notes)",
+						"fromLoc": "Starting location",
+						"toLoc": "Ending location",
+						"tokenId": "The ID of the sign",
+						"wage": "Amount paid for the movement"
+					}
+				},
 				"renounceOwnership()": {
 					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
 				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				},
+				"verifyMovementRecord(uint256,((int64,int64,uint64),(int64,int64,uint64),address,uint96),bytes32)": {
+					"details": "Verifies the integrity of a specific movement record",
+					"params": {
+						"contentHash": "The content hash associated with the movement",
+						"movementData": "The movement data to verify",
+						"tokenId": "The ID of the sign"
+					},
+					"returns": {
+						"_0": "bool True if the movement record is valid"
+					}
 				}
 			},
+			"title": "SignsHistory",
 			"version": 1
 		},
 		"userdoc": {
@@ -709,11 +821,11 @@
 			]
 		},
 		"Signs 2/SignsHistory.sol": {
-			"keccak256": "0x09be948c0bfab043acae6ec9161ccbe458666c8fa3145466d6e9b60327a03b7a",
+			"keccak256": "0xed9ee7f5737e3cfa44236a7befdbcdd6dea72b23b95c3fce33d8e6270d7b1264",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2e8e5f95f60b07edbd7afb71918a6fcb0c00dd467a96d2818e986814dc19598d",
-				"dweb:/ipfs/QmeEqQVipFpwnjLwpmLVdaVRst328rX5NfTaqnVM6AbEne"
+				"bzz-raw://08425a1137fad7dcba31c3d9ad3939b33f541e386dba6c3ff683f5669995f076",
+				"dweb:/ipfs/QmSaHQss4wrLLvQefxsF5qvhb5BCr18DH7j4JxmX3DrtBZ"
 			]
 		}
 	},

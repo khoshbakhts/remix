@@ -494,6 +494,18 @@
 						"internalType": "struct ISigns.Location",
 						"name": "to",
 						"type": "tuple"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "weight",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "distance",
+						"type": "uint256"
 					}
 				],
 				"name": "SignMoved",
@@ -1874,11 +1886,11 @@
 			]
 		},
 		"Signs 2/SignsNFT.sol": {
-			"keccak256": "0xcb5642eccb416ce57b708ada0e39ff06fbd4e19c90111d92e77b6c4c557cd3d7",
+			"keccak256": "0x53116ba8733b7a04b9719666f9c549916321ac1d6a4f2b1ed6ec97982c790118",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6f98b3cd0f9a0ec87bb4ef2de8a31c44efbf9a0386ea743ed448837f4d80ed87",
-				"dweb:/ipfs/QmakXMfZABRvFUosTkwxFFewTSecGXgX5vQNq5gmE3xUg2"
+				"bzz-raw://1dbac4e0b1a21975c41911b8f581d8b3a84bb26c68d413e1112795e655e9c91b",
+				"dweb:/ipfs/QmRcGAeL9hCwJXERt4J1Gk4LRKBfCuUt94eRsFds6QSoDA"
 			]
 		}
 	},

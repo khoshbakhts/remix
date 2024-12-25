@@ -39,7 +39,7 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     ISignToken public signToken;    
 
     event SignCreated(uint256 indexed tokenId, address indexed owner, Location home);
-    event SignMoved(uint256 indexed tokenId, address indexed carrier, Location from, Location to);
+    event SignMoved(uint256 indexed tokenId, address indexed carrier, Location from, Location to, uint256 weight, uint256 distance);
     event HomeUpdated(uint256 indexed tokenId, Location newHome);
     event SignPickedUp(uint256 indexed tokenId, address indexed carrier, Location location);
     event SignDropped(uint256 indexed tokenId, address indexed carrier, Location location);
@@ -212,7 +212,7 @@ function setSignToken(address _signToken) external onlyOwner {
 
         // Emit all relevant events
         emit SignDropped(tokenId, msg.sender, location);
-        emit SignMoved(tokenId, msg.sender, oldLocation, location);
+        emit SignMoved(tokenId, msg.sender, oldLocation, location, sign.weight, movedDistance);
         emit ContentHashUpdated(tokenId, contentHash);
         emit WagePaymentProcessed(
             tokenId,
