@@ -80,11 +80,11 @@
 	},
 	"sources": {
 		"Signs 2/ISignToken.sol": {
-			"keccak256": "0x35d79287c59f6ae3a0ed55427d0e7ea991c36dd359a20e077aeb7893da0aa6d6",
+			"keccak256": "0xe4a3a169a6eeb696275df7ea556ddc9040e685e6024520dc1fede6c365c4d90e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7be561f272ba546a99728efd4754b6c7b2f00a0964249c1c00af72437adee0c9",
-				"dweb:/ipfs/QmVpHNXJDyPtY85xdRybrFid718Djoa937iEJBFu2wXch8"
+				"bzz-raw://837c0e8f6d00f1dbd884626af0a1339e6d79ce25aa24a08bc1399c3fd6c8cd23",
+				"dweb:/ipfs/Qmf3TjtG1SoghPcELCkWTfUsDaKhCrtT6UeCYnmySL1TFU"
 			]
 		}
 	},

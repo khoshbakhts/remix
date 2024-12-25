@@ -1,5 +1,5 @@
 {
-	"id": "a21eca02027d5aa77c8c2256196e0d97",
+	"id": "34879459d361be5ca8f2c1b8d7fe3337",
 	"_format": "hh-sol-build-info-1",
 	"solcVersion": "0.8.26",
 	"solcLongVersion": "0.8.26+commit.8a97fa7a",
@@ -7,7 +7,7 @@
 		"language": "Solidity",
 		"sources": {
 			"Signs 2/ISignToken.sol": {
-				"content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.19;\r\n\r\ninterface ISignToken {\r\n    struct WagePaymentResult {\r\n        uint256 paidAmount;\r\n        uint256 remainingWage;\r\n        bool isPartialPayment;\r\n    }\r\n\r\n    function payWage(\r\n        uint256 tokenId,\r\n        address carrier,\r\n        uint256 amount\r\n    ) external returns (WagePaymentResult memory);\r\n}"
+				"content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.19;\r\n\r\ninterface ISignToken {\r\n    struct WagePaymentResult {\r\n        uint256 paidAmount;\r\n        uint256 remainingWage;\r\n        bool isPartialPayment;\r\n    }\r\n\r\n    function payWage(\r\n        uint256 tokenId,\r\n        address carrier,\r\n        uint256 amount\r\n    ) external returns (WagePaymentResult memory);\r\n    \r\n}"
 			}
 		},
 		"settings": {
@@ -120,7 +120,7 @@
 							"payWage(uint256,address,uint256)": "ef9ecc1d"
 						}
 					},
-					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"carrier\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"payWage\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"paidAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"remainingWage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPartialPayment\",\"type\":\"bool\"}],\"internalType\":\"struct ISignToken.WagePaymentResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"Signs 2/ISignToken.sol\":\"ISignToken\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"Signs 2/ISignToken.sol\":{\"keccak256\":\"0x35d79287c59f6ae3a0ed55427d0e7ea991c36dd359a20e077aeb7893da0aa6d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7be561f272ba546a99728efd4754b6c7b2f00a0964249c1c00af72437adee0c9\",\"dweb:/ipfs/QmVpHNXJDyPtY85xdRybrFid718Djoa937iEJBFu2wXch8\"]}},\"version\":1}",
+					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"carrier\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"payWage\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"paidAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"remainingWage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPartialPayment\",\"type\":\"bool\"}],\"internalType\":\"struct ISignToken.WagePaymentResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"Signs 2/ISignToken.sol\":\"ISignToken\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"Signs 2/ISignToken.sol\":{\"keccak256\":\"0xe4a3a169a6eeb696275df7ea556ddc9040e685e6024520dc1fede6c365c4d90e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://837c0e8f6d00f1dbd884626af0a1339e6d79ce25aa24a08bc1399c3fd6c8cd23\",\"dweb:/ipfs/Qmf3TjtG1SoghPcELCkWTfUsDaKhCrtT6UeCYnmySL1TFU\"]}},\"version\":1}",
 					"storageLayout": {
 						"storage": [],
 						"types": null
@@ -415,12 +415,12 @@
 								}
 							],
 							"scope": 22,
-							"src": "61:310:0",
+							"src": "61:316:0",
 							"usedErrors": [],
 							"usedEvents": []
 						}
 					],
-					"src": "33:338:0"
+					"src": "33:344:0"
 				},
 				"id": 0
 			}

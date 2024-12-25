@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -74,6 +75,8 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     function setSignToken(address _signToken) external onlyOwner {
         if (_signToken == address(0)) revert InvalidAddress();
         signToken = ISignToken(_signToken);
+        //IERC20(signToken).approve(_signToken, type(uint256).max);
+        //signToken.approve(_signToken, type(uint256).max);
     }
 
     function recordMovement(

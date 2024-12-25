@@ -13,4 +13,5 @@ interface ISignToken {
         address carrier,
         uint256 amount
     ) external returns (WagePaymentResult memory);
+    
 }
