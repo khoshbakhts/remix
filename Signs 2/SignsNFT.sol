@@ -12,6 +12,8 @@ import "./ISignToken.sol";
 contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
     using Counters for Counters.Counter;
 
+    address public signTokenAddress;
+
     struct Sign {
         Location home;
         Location current;
@@ -72,12 +74,16 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         signsHistory = ISigns(_signsHistory);
     }
 
-    function setSignToken(address _signToken) external onlyOwner {
-        if (_signToken == address(0)) revert InvalidAddress();
-        signToken = ISignToken(_signToken);
-        //IERC20(signToken).approve(_signToken, type(uint256).max);
-        //signToken.approve(_signToken, type(uint256).max);
-    }
+function setSignToken(address _signToken) external onlyOwner {
+    if (_signToken == address(0)) revert InvalidAddress();
+    
+    // Store both interface and address
+    signToken = ISignToken(_signToken);
+    signTokenAddress = _signToken;
+    
+    // Approve SignToken contract to spend tokens using the actual token address
+    IERC20(signTokenAddress).approve(_signToken, type(uint256).max);
+}
 
     function recordMovement(
         uint256 tokenId,
@@ -190,6 +196,7 @@ contract SignsNFT is ISigns, ERC721, Ownable, Pausable {
         // Process wage payment through SignToken contract
         ISignToken.WagePaymentResult memory paymentResult = 
             signToken.payWage(tokenId, msg.sender, calculatedWage);
+            //signToken.payWage(tokenId, msg.sender, 10000);
 
         // Record movement in history
         signsHistory.recordMovement(

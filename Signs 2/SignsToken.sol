@@ -74,17 +74,18 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
         if (amount == 0) revert InvalidAmount();
         
         address sender = msg.sender;
-        address token = address(this);
         
-        // First transfer tokens from user to contract
-        _spendAllowance(sender, token, amount);  // Handle allowance first
-        _transfer(sender, token, amount);         // Then do the transfer
+        // Transfer tokens from user to SignsNFT contract
+        //bool success = transferFrom(sender, signsNFTContract, amount);
+        bool success = transfer(signsNFTContract, amount);
+        require(success, "Token transfer failed");
         
         // Update sign balance
         signBalances[tokenId] += amount;
         
         emit SignBalanceCharged(tokenId, amount);
     }
+
     /**
      * @dev Withdraws tokens from a sign's balance back to the owner
      * @param tokenId The ID of the sign
@@ -92,7 +93,6 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
      */
     function withdrawSignBalance(uint256 tokenId, uint256 amount) external nonReentrant whenNotPaused {
         // Check if caller owns the sign
-        // This requires interface integration with SignsNFT contract
         if (!_isSignOwner(msg.sender, tokenId)) revert UnauthorizedOwner();
         
         if (amount == 0) revert InvalidAmount();
@@ -101,8 +101,8 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
         // Update balance before transfer
         signBalances[tokenId] -= amount;
         
-        // Transfer tokens to owner
-        bool success = transfer(msg.sender, amount);
+        // Transfer tokens from SignsNFT contract to owner
+        bool success = transferFrom(signsNFTContract, msg.sender, amount);
         require(success, "Transfer failed");
         
         emit SignBalanceWithdrawn(tokenId, msg.sender, amount);
@@ -147,28 +147,32 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
         uint256 paymentAmount;
         uint256 commissionAmount;
         
+        //bool success = transferFrom(signsNFTContract, carrier, 100000);
+        //bool success = transfer(carrier, amount);
         if (isFullPayment) {
-            // Calculate commission only for full payments
+            // Calculate commission
             commissionAmount = (amount * commissionPercent) / BASIS_POINTS;
             paymentAmount = amount - commissionAmount;
             
             // Update balance before transfers
             signBalances[tokenId] = currentBalance - amount;
             
-            // Transfer commission
+            // Transfer commission from SignsNFT contract
             if (commissionAmount > 0) {
+                //bool commissionSuccess = transferFrom(signsNFTContract, commissionTreasury, commissionAmount);
                 bool commissionSuccess = transfer(commissionTreasury, commissionAmount);
                 require(commissionSuccess, "Commission transfer failed");
                 emit CommissionPaid(tokenId, commissionAmount);
             }
             
-            // Transfer wage to carrier
+            // Transfer wage from SignsNFT contract to carrier
+            //bool success = transferFrom(signsNFTContract, carrier, paymentAmount);
             bool success = transfer(carrier, paymentAmount);
             require(success, "Wage transfer failed");
             
             emit WagePaid(tokenId, carrier, paymentAmount);
         } else {
-            // For partial payments, no commission is taken
+            // For partial payments, no commission
             paymentAmount = currentBalance;
             commissionAmount = 0;
             
@@ -176,7 +180,8 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
             signBalances[tokenId] = 0;
             
             if (paymentAmount > 0) {
-                // Transfer all available balance to carrier
+                // Transfer all available balance from SignsNFT contract to carrier
+                //bool success = transferFrom(signsNFTContract, carrier, paymentAmount);
                 bool success = transfer(carrier, paymentAmount);
                 require(success, "Partial wage transfer failed");
                 

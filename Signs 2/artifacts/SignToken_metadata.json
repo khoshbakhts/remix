@@ -1142,11 +1142,11 @@
 			]
 		},
 		"Signs 2/SignsToken.sol": {
-			"keccak256": "0xbd8000769b2b1b2cc1b8f0552278c817218001e6819caa84be6234d8b044f7a9",
+			"keccak256": "0x63c0db7147c51489292d0795345b5e7c465cb6f7790cfc37892e7b1dae0c7daa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ccd2961e675d7a66f836a24775fa8eac1f0a5c4a056f26a85b31a609ee9e2a5f",
-				"dweb:/ipfs/QmesGivCMZkMnoBpoPNc9zkJzF97MpgZ2iVXxc2o25RjZi"
+				"bzz-raw://1654d40158ca8704e025b5dbcf2fdd59478fb7bd08bc8767ee259a1110c22a5e",
+				"dweb:/ipfs/QmNYRQVueBwyxpZdASEKeEYeDky5bSthCG5u1r2yBoh4YB"
 			]
 		}
 	},
