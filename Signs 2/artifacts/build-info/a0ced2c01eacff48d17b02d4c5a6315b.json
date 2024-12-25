@@ -1,0 +1,1465 @@
+{
+	"id": "a0ced2c01eacff48d17b02d4c5a6315b",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.26",
+	"solcLongVersion": "0.8.26+commit.8a97fa7a",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"Signs 2/ISignsNFT.sol": {
+				"content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.19;\r\n\r\nimport \"./ISigns.sol\";\r\n\r\ninterface ISignsNFT {\r\n    struct Sign {\r\n        ISigns.Location home;\r\n        ISigns.Location current;\r\n        uint256 totalMoves;\r\n        uint256 totalDistanceMeters;\r\n        uint256 weight;\r\n        address owner;\r\n        bool isPickedUp;\r\n        bytes32 contentHash;\r\n        uint256 signWage;\r\n    }\r\n    \r\n    function signs(uint256 tokenId) external view returns (\r\n        ISigns.Location memory home,\r\n        ISigns.Location memory current,\r\n        uint256 totalMoves,\r\n        uint256 totalDistanceMeters,\r\n        uint256 weight,\r\n        address owner,\r\n        bool isPickedUp,\r\n        bytes32 contentHash,\r\n        uint256 signWage\r\n    );\r\n}"
+			},
+			"Signs 2/ISigns.sol": {
+				"content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.19;\r\n\r\ninterface ISigns {\r\n    struct Location {\r\n        int64 latitude;    // ~4 decimal places precision (-90 to +90)\r\n        int64 longitude;   // ~4 decimal places precision (-180 to +180)\r\n        uint64 timestamp;  // Good until year 2554\r\n    }\r\n\r\n    struct MovementRecord {\r\n        Location fromLocation;\r\n        Location toLocation;\r\n        address carrier;\r\n        uint96 wage;\r\n    }\r\n\r\n    function recordMovement(\r\n        uint256 tokenId,\r\n        address carrier,\r\n        Location calldata fromLoc,\r\n        Location calldata toLoc,\r\n        uint256 wage,\r\n        bytes32 contentHash\r\n    ) external;\r\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"contracts": {
+			"Signs 2/ISigns.sol": {
+				"ISigns": {
+					"abi": [
+						{
+							"inputs": [
+								{
+									"internalType": "uint256",
+									"name": "tokenId",
+									"type": "uint256"
+								},
+								{
+									"internalType": "address",
+									"name": "carrier",
+									"type": "address"
+								},
+								{
+									"components": [
+										{
+											"internalType": "int64",
+											"name": "latitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "int64",
+											"name": "longitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "uint64",
+											"name": "timestamp",
+											"type": "uint64"
+										}
+									],
+									"internalType": "struct ISigns.Location",
+									"name": "fromLoc",
+									"type": "tuple"
+								},
+								{
+									"components": [
+										{
+											"internalType": "int64",
+											"name": "latitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "int64",
+											"name": "longitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "uint64",
+											"name": "timestamp",
+											"type": "uint64"
+										}
+									],
+									"internalType": "struct ISigns.Location",
+									"name": "toLoc",
+									"type": "tuple"
+								},
+								{
+									"internalType": "uint256",
+									"name": "wage",
+									"type": "uint256"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "contentHash",
+									"type": "bytes32"
+								}
+							],
+							"name": "recordMovement",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"recordMovement(uint256,address,(int64,int64,uint64),(int64,int64,uint64),uint256,bytes32)": "080807be"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"carrier\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"int64\",\"name\":\"latitude\",\"type\":\"int64\"},{\"internalType\":\"int64\",\"name\":\"longitude\",\"type\":\"int64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct ISigns.Location\",\"name\":\"fromLoc\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"int64\",\"name\":\"latitude\",\"type\":\"int64\"},{\"internalType\":\"int64\",\"name\":\"longitude\",\"type\":\"int64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct ISigns.Location\",\"name\":\"toLoc\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"wage\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"contentHash\",\"type\":\"bytes32\"}],\"name\":\"recordMovement\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"Signs 2/ISigns.sol\":\"ISigns\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"Signs 2/ISigns.sol\":{\"keccak256\":\"0x9c0bef879fb7feff9e671c7da1d5ee05635a3efd3828c3fa2c0ca8bf45c30fe3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://14d373e0f2aa9296521a57c7eb51c1df0bf1a86b189b0c05bf4dc4254b7c0ad4\",\"dweb:/ipfs/Qmcmh3KGqJ1efv8EQUf2h18saPd4PUvtAqcqnde2KsdETr\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			},
+			"Signs 2/ISignsNFT.sol": {
+				"ISignsNFT": {
+					"abi": [
+						{
+							"inputs": [
+								{
+									"internalType": "uint256",
+									"name": "tokenId",
+									"type": "uint256"
+								}
+							],
+							"name": "signs",
+							"outputs": [
+								{
+									"components": [
+										{
+											"internalType": "int64",
+											"name": "latitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "int64",
+											"name": "longitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "uint64",
+											"name": "timestamp",
+											"type": "uint64"
+										}
+									],
+									"internalType": "struct ISigns.Location",
+									"name": "home",
+									"type": "tuple"
+								},
+								{
+									"components": [
+										{
+											"internalType": "int64",
+											"name": "latitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "int64",
+											"name": "longitude",
+											"type": "int64"
+										},
+										{
+											"internalType": "uint64",
+											"name": "timestamp",
+											"type": "uint64"
+										}
+									],
+									"internalType": "struct ISigns.Location",
+									"name": "current",
+									"type": "tuple"
+								},
+								{
+									"internalType": "uint256",
+									"name": "totalMoves",
+									"type": "uint256"
+								},
+								{
+									"internalType": "uint256",
+									"name": "totalDistanceMeters",
+									"type": "uint256"
+								},
+								{
+									"internalType": "uint256",
+									"name": "weight",
+									"type": "uint256"
+								},
+								{
+									"internalType": "address",
+									"name": "owner",
+									"type": "address"
+								},
+								{
+									"internalType": "bool",
+									"name": "isPickedUp",
+									"type": "bool"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "contentHash",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "uint256",
+									"name": "signWage",
+									"type": "uint256"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"signs(uint256)": "cb75b997"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"signs\",\"outputs\":[{\"components\":[{\"internalType\":\"int64\",\"name\":\"latitude\",\"type\":\"int64\"},{\"internalType\":\"int64\",\"name\":\"longitude\",\"type\":\"int64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct ISigns.Location\",\"name\":\"home\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"int64\",\"name\":\"latitude\",\"type\":\"int64\"},{\"internalType\":\"int64\",\"name\":\"longitude\",\"type\":\"int64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct ISigns.Location\",\"name\":\"current\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"totalMoves\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalDistanceMeters\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isPickedUp\",\"type\":\"bool\"},{\"internalType\":\"bytes32\",\"name\":\"contentHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"signWage\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"Signs 2/ISignsNFT.sol\":\"ISignsNFT\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"Signs 2/ISigns.sol\":{\"keccak256\":\"0x9c0bef879fb7feff9e671c7da1d5ee05635a3efd3828c3fa2c0ca8bf45c30fe3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://14d373e0f2aa9296521a57c7eb51c1df0bf1a86b189b0c05bf4dc4254b7c0ad4\",\"dweb:/ipfs/Qmcmh3KGqJ1efv8EQUf2h18saPd4PUvtAqcqnde2KsdETr\"]},\"Signs 2/ISignsNFT.sol\":{\"keccak256\":\"0x0b60a8c4fc04df1d276f2cecdce1cf978aafa1523eb70fbf4799f21d579a5245\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3d32b9c158e6f97269d96dfe2a1b56ba4760e660cdc9a6e6181aa9d15d078729\",\"dweb:/ipfs/QmaP7HD3v7jLcdc1zxU5LVLA7Zw59uQMm2q157zf8c8MJh\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"Signs 2/ISigns.sol": {
+				"ast": {
+					"absolutePath": "Signs 2/ISigns.sol",
+					"exportedSymbols": {
+						"ISigns": [
+							37
+						]
+					},
+					"id": 38,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".19"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "33:24:0"
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "ISigns",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"fullyImplemented": false,
+							"id": 37,
+							"linearizedBaseContracts": [
+								37
+							],
+							"name": "ISigns",
+							"nameLocation": "71:6:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"canonicalName": "ISigns.Location",
+									"id": 8,
+									"members": [
+										{
+											"constant": false,
+											"id": 3,
+											"mutability": "mutable",
+											"name": "latitude",
+											"nameLocation": "118:8:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 8,
+											"src": "112:14:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_int64",
+												"typeString": "int64"
+											},
+											"typeName": {
+												"id": 2,
+												"name": "int64",
+												"nodeType": "ElementaryTypeName",
+												"src": "112:5:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_int64",
+													"typeString": "int64"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 5,
+											"mutability": "mutable",
+											"name": "longitude",
+											"nameLocation": "190:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 8,
+											"src": "184:15:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_int64",
+												"typeString": "int64"
+											},
+											"typeName": {
+												"id": 4,
+												"name": "int64",
+												"nodeType": "ElementaryTypeName",
+												"src": "184:5:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_int64",
+													"typeString": "int64"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 7,
+											"mutability": "mutable",
+											"name": "timestamp",
+											"nameLocation": "265:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 8,
+											"src": "258:16:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint64",
+												"typeString": "uint64"
+											},
+											"typeName": {
+												"id": 6,
+												"name": "uint64",
+												"nodeType": "ElementaryTypeName",
+												"src": "258:6:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint64",
+													"typeString": "uint64"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "Location",
+									"nameLocation": "92:8:0",
+									"nodeType": "StructDefinition",
+									"scope": 37,
+									"src": "85:222:0",
+									"visibility": "public"
+								},
+								{
+									"canonicalName": "ISigns.MovementRecord",
+									"id": 19,
+									"members": [
+										{
+											"constant": false,
+											"id": 11,
+											"mutability": "mutable",
+											"name": "fromLocation",
+											"nameLocation": "357:12:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 19,
+											"src": "348:21:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+												"typeString": "struct ISigns.Location"
+											},
+											"typeName": {
+												"id": 10,
+												"nodeType": "UserDefinedTypeName",
+												"pathNode": {
+													"id": 9,
+													"name": "Location",
+													"nameLocations": [
+														"348:8:0"
+													],
+													"nodeType": "IdentifierPath",
+													"referencedDeclaration": 8,
+													"src": "348:8:0"
+												},
+												"referencedDeclaration": 8,
+												"src": "348:8:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+													"typeString": "struct ISigns.Location"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 14,
+											"mutability": "mutable",
+											"name": "toLocation",
+											"nameLocation": "389:10:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 19,
+											"src": "380:19:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+												"typeString": "struct ISigns.Location"
+											},
+											"typeName": {
+												"id": 13,
+												"nodeType": "UserDefinedTypeName",
+												"pathNode": {
+													"id": 12,
+													"name": "Location",
+													"nameLocations": [
+														"380:8:0"
+													],
+													"nodeType": "IdentifierPath",
+													"referencedDeclaration": 8,
+													"src": "380:8:0"
+												},
+												"referencedDeclaration": 8,
+												"src": "380:8:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+													"typeString": "struct ISigns.Location"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 16,
+											"mutability": "mutable",
+											"name": "carrier",
+											"nameLocation": "418:7:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 19,
+											"src": "410:15:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_address",
+												"typeString": "address"
+											},
+											"typeName": {
+												"id": 15,
+												"name": "address",
+												"nodeType": "ElementaryTypeName",
+												"src": "410:7:0",
+												"stateMutability": "nonpayable",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 18,
+											"mutability": "mutable",
+											"name": "wage",
+											"nameLocation": "443:4:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 19,
+											"src": "436:11:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint96",
+												"typeString": "uint96"
+											},
+											"typeName": {
+												"id": 17,
+												"name": "uint96",
+												"nodeType": "ElementaryTypeName",
+												"src": "436:6:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint96",
+													"typeString": "uint96"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "MovementRecord",
+									"nameLocation": "322:14:0",
+									"nodeType": "StructDefinition",
+									"scope": 37,
+									"src": "315:140:0",
+									"visibility": "public"
+								},
+								{
+									"functionSelector": "080807be",
+									"id": 36,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "recordMovement",
+									"nameLocation": "472:14:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 34,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 21,
+												"mutability": "mutable",
+												"name": "tokenId",
+												"nameLocation": "505:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 36,
+												"src": "497:15:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 20,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "497:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 23,
+												"mutability": "mutable",
+												"name": "carrier",
+												"nameLocation": "531:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 36,
+												"src": "523:15:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 22,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "523:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 26,
+												"mutability": "mutable",
+												"name": "fromLoc",
+												"nameLocation": "567:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 36,
+												"src": "549:25:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_calldata_ptr",
+													"typeString": "struct ISigns.Location"
+												},
+												"typeName": {
+													"id": 25,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 24,
+														"name": "Location",
+														"nameLocations": [
+															"549:8:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 8,
+														"src": "549:8:0"
+													},
+													"referencedDeclaration": 8,
+													"src": "549:8:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+														"typeString": "struct ISigns.Location"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 29,
+												"mutability": "mutable",
+												"name": "toLoc",
+												"nameLocation": "603:5:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 36,
+												"src": "585:23:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_calldata_ptr",
+													"typeString": "struct ISigns.Location"
+												},
+												"typeName": {
+													"id": 28,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 27,
+														"name": "Location",
+														"nameLocations": [
+															"585:8:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 8,
+														"src": "585:8:0"
+													},
+													"referencedDeclaration": 8,
+													"src": "585:8:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+														"typeString": "struct ISigns.Location"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 31,
+												"mutability": "mutable",
+												"name": "wage",
+												"nameLocation": "627:4:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 36,
+												"src": "619:12:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 30,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "619:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 33,
+												"mutability": "mutable",
+												"name": "contentHash",
+												"nameLocation": "650:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 36,
+												"src": "642:19:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 32,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "642:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "486:182:0"
+									},
+									"returnParameters": {
+										"id": 35,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "677:0:0"
+									},
+									"scope": 37,
+									"src": "463:215:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								}
+							],
+							"scope": 38,
+							"src": "61:620:0",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "33:648:0"
+				},
+				"id": 0
+			},
+			"Signs 2/ISignsNFT.sol": {
+				"ast": {
+					"absolutePath": "Signs 2/ISignsNFT.sol",
+					"exportedSymbols": {
+						"ISigns": [
+							37
+						],
+						"ISignsNFT": [
+							87
+						]
+					},
+					"id": 88,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 39,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".19"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "33:24:1"
+						},
+						{
+							"absolutePath": "Signs 2/ISigns.sol",
+							"file": "./ISigns.sol",
+							"id": 40,
+							"nameLocation": "-1:-1:-1",
+							"nodeType": "ImportDirective",
+							"scope": 88,
+							"sourceUnit": 38,
+							"src": "61:22:1",
+							"symbolAliases": [],
+							"unitAlias": ""
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "ISignsNFT",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"fullyImplemented": false,
+							"id": 87,
+							"linearizedBaseContracts": [
+								87
+							],
+							"name": "ISignsNFT",
+							"nameLocation": "97:9:1",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"canonicalName": "ISignsNFT.Sign",
+									"id": 61,
+									"members": [
+										{
+											"constant": false,
+											"id": 43,
+											"mutability": "mutable",
+											"name": "home",
+											"nameLocation": "153:4:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "137:20:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+												"typeString": "struct ISigns.Location"
+											},
+											"typeName": {
+												"id": 42,
+												"nodeType": "UserDefinedTypeName",
+												"pathNode": {
+													"id": 41,
+													"name": "ISigns.Location",
+													"nameLocations": [
+														"137:6:1",
+														"144:8:1"
+													],
+													"nodeType": "IdentifierPath",
+													"referencedDeclaration": 8,
+													"src": "137:15:1"
+												},
+												"referencedDeclaration": 8,
+												"src": "137:15:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+													"typeString": "struct ISigns.Location"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 46,
+											"mutability": "mutable",
+											"name": "current",
+											"nameLocation": "184:7:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "168:23:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+												"typeString": "struct ISigns.Location"
+											},
+											"typeName": {
+												"id": 45,
+												"nodeType": "UserDefinedTypeName",
+												"pathNode": {
+													"id": 44,
+													"name": "ISigns.Location",
+													"nameLocations": [
+														"168:6:1",
+														"175:8:1"
+													],
+													"nodeType": "IdentifierPath",
+													"referencedDeclaration": 8,
+													"src": "168:15:1"
+												},
+												"referencedDeclaration": 8,
+												"src": "168:15:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+													"typeString": "struct ISigns.Location"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 48,
+											"mutability": "mutable",
+											"name": "totalMoves",
+											"nameLocation": "210:10:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "202:18:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 47,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "202:7:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 50,
+											"mutability": "mutable",
+											"name": "totalDistanceMeters",
+											"nameLocation": "239:19:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "231:27:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 49,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "231:7:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 52,
+											"mutability": "mutable",
+											"name": "weight",
+											"nameLocation": "277:6:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "269:14:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 51,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "269:7:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 54,
+											"mutability": "mutable",
+											"name": "owner",
+											"nameLocation": "302:5:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "294:13:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_address",
+												"typeString": "address"
+											},
+											"typeName": {
+												"id": 53,
+												"name": "address",
+												"nodeType": "ElementaryTypeName",
+												"src": "294:7:1",
+												"stateMutability": "nonpayable",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 56,
+											"mutability": "mutable",
+											"name": "isPickedUp",
+											"nameLocation": "323:10:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "318:15:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_bool",
+												"typeString": "bool"
+											},
+											"typeName": {
+												"id": 55,
+												"name": "bool",
+												"nodeType": "ElementaryTypeName",
+												"src": "318:4:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 58,
+											"mutability": "mutable",
+											"name": "contentHash",
+											"nameLocation": "352:11:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "344:19:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_bytes32",
+												"typeString": "bytes32"
+											},
+											"typeName": {
+												"id": 57,
+												"name": "bytes32",
+												"nodeType": "ElementaryTypeName",
+												"src": "344:7:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 60,
+											"mutability": "mutable",
+											"name": "signWage",
+											"nameLocation": "382:8:1",
+											"nodeType": "VariableDeclaration",
+											"scope": 61,
+											"src": "374:16:1",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 59,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "374:7:1",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "Sign",
+									"nameLocation": "121:4:1",
+									"nodeType": "StructDefinition",
+									"scope": 87,
+									"src": "114:284:1",
+									"visibility": "public"
+								},
+								{
+									"functionSelector": "cb75b997",
+									"id": 86,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "signs",
+									"nameLocation": "419:5:1",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 64,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 63,
+												"mutability": "mutable",
+												"name": "tokenId",
+												"nameLocation": "433:7:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "425:15:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 62,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "425:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "424:17:1"
+									},
+									"returnParameters": {
+										"id": 85,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 67,
+												"mutability": "mutable",
+												"name": "home",
+												"nameLocation": "498:4:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "475:27:1",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_memory_ptr",
+													"typeString": "struct ISigns.Location"
+												},
+												"typeName": {
+													"id": 66,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 65,
+														"name": "ISigns.Location",
+														"nameLocations": [
+															"475:6:1",
+															"482:8:1"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 8,
+														"src": "475:15:1"
+													},
+													"referencedDeclaration": 8,
+													"src": "475:15:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+														"typeString": "struct ISigns.Location"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 70,
+												"mutability": "mutable",
+												"name": "current",
+												"nameLocation": "536:7:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "513:30:1",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_Location_$8_memory_ptr",
+													"typeString": "struct ISigns.Location"
+												},
+												"typeName": {
+													"id": 69,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 68,
+														"name": "ISigns.Location",
+														"nameLocations": [
+															"513:6:1",
+															"520:8:1"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 8,
+														"src": "513:15:1"
+													},
+													"referencedDeclaration": 8,
+													"src": "513:15:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_Location_$8_storage_ptr",
+														"typeString": "struct ISigns.Location"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 72,
+												"mutability": "mutable",
+												"name": "totalMoves",
+												"nameLocation": "562:10:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "554:18:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 71,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "554:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 74,
+												"mutability": "mutable",
+												"name": "totalDistanceMeters",
+												"nameLocation": "591:19:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "583:27:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 73,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "583:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 76,
+												"mutability": "mutable",
+												"name": "weight",
+												"nameLocation": "629:6:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "621:14:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 75,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "621:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 78,
+												"mutability": "mutable",
+												"name": "owner",
+												"nameLocation": "654:5:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "646:13:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 77,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "646:7:1",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 80,
+												"mutability": "mutable",
+												"name": "isPickedUp",
+												"nameLocation": "675:10:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "670:15:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												},
+												"typeName": {
+													"id": 79,
+													"name": "bool",
+													"nodeType": "ElementaryTypeName",
+													"src": "670:4:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bool",
+														"typeString": "bool"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 82,
+												"mutability": "mutable",
+												"name": "contentHash",
+												"nameLocation": "704:11:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "696:19:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 81,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "696:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 84,
+												"mutability": "mutable",
+												"name": "signWage",
+												"nameLocation": "734:8:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "726:16:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 83,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "726:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "464:285:1"
+									},
+									"scope": 87,
+									"src": "410:340:1",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								}
+							],
+							"scope": 88,
+							"src": "87:666:1",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "33:720:1"
+				},
+				"id": 1
+			}
+		}
+	}
+}

@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./ISigns.sol";
+import "./ISignsNFT.sol";
 
 /**
  * @title SignToken
@@ -12,6 +14,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  */
 contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
     // Contract references
+    ISignsNFT public signsNFT;
     address public signsNFTContract;
     
     // Commission settings
@@ -92,7 +95,7 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
      * @param amount Amount to withdraw
      */
     function withdrawSignBalance(uint256 tokenId, uint256 amount) external nonReentrant whenNotPaused {
-        // Check if caller owns the sign
+        // Check if caller owns the sign using SignsNFT contract
         if (!_isSignOwner(msg.sender, tokenId)) revert UnauthorizedOwner();
         
         if (amount == 0) revert InvalidAmount();
@@ -205,6 +208,7 @@ contract SignToken is ERC20, Pausable, Ownable, ReentrancyGuard {
     function updateSignsNFTContract(address _newAddress) external onlyOwner {
         if (_newAddress == address(0)) revert InvalidNFTContract();
         signsNFTContract = _newAddress;
+        signsNFT = ISignsNFT(_newAddress);
         emit NFTContractUpdated(_newAddress);
     }
 
